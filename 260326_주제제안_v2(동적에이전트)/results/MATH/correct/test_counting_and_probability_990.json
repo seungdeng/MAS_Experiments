@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "On the $xy$-plane, the origin is labeled with an $M$. The points $(1,0)$, $(-1,0)$, $(0,1)$, and $(0,-1)$ are labeled with $A$'s. The points $(2,0)$, $(1,1)$, $(0,2)$, $(-1, 1)$, $(-2, 0)$, $(-1, -1)$, $(0, -2)$, and $(1, -1)$ are labeled with $T$'s. The points $(3,0)$, $(2,1)$, $(1,2)$, $(0, 3)$, $(-1, 2)$, $(-2, 1)$, $(-3, 0)$, $(-2,-1)$, $(-1,-2)$, $(0, -3)$, $(1, -2)$, and $(2, -1)$ are labeled with $H$'s. If you are only allowed to move up, down, left, and right, starting from the origin, how many distinct paths can be followed to spell the word MATH?",
+    "task_id": "test/counting_and_probability/990.json",
+    "level": "5",
+    "ground_truth": "28",
+    "predicted_answer": "28",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: On the $xy$-plane, the origin is labeled with an $M$. The points $(1,0)$, $(-1,0)$, $(0,1)$, and $(0,-1)$ are labeled with $A$'s. The points $(2,0)$, $(1,1)$, $(0,2)$, $(-1, 1)$, $(-2, 0)$, $(-1, -1)$, $(0, -2)$, and $(1, -1)$ are labeled with $T$'s. The points $(3,0)$, $(2,1)$, $(1,2)$, $(0, 3)$, $(-1, 2)$, $(-2, 1)$, $(-3, 0)$, $(-2,-1)$, $(-1,-2)$, $(0, -3)$, $(1, -2)$, and $(2, -1)$ are labeled with $H$'s. If you are only allowed to move up, down, left, and right, starting from the origin, how many distinct paths can be followed to spell the word MATH?\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's the plan to solve this path-counting problem:\n\n1. **Visualize the Grid:** Imagine the xy-plane with the M, A, T, and H labels as described.\n\n2. **Path Decomposition:**  A path to spell \"MATH\" consists of three segments:\n    * M to A\n    * A to T\n    * T to H\n\n3. **Count M to A paths:** Determine the number of paths from the origin (M) to each of the four points labeled 'A'.\n\n4. **Count A to T paths:** For *each* 'A' point, determine the number of paths to each of the 'T' points.\n\n5. **Count T to H paths:** For *each* 'T' point, determine the number of paths to each of the 'H' points.\n\n6. **Combine Path Counts:** For each possible path M -> A -> T -> H, multiply the number of paths for each segment (M->A, A->T, T->H).\n\n7. **Sum the Products:** Sum all the products calculated in step 6 to get the total number of distinct \"MATH\" paths.\n\nThe Drafter will need to carefully count paths on the grid, ensuring only up, down, left, and right movements are allowed.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "The Planner has provided a solid strategy to solve the problem by breaking it down into smaller, manageable steps. Now, we need the Drafter to execute the plan and calculate the number of paths.\nNEXT: Drafter\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "Okay, I will execute the plan to count the number of distinct paths to spell \"MATH\".\n\n**1. Visualize the Grid:** Imagine the xy-plane with the M, A, T, and H labels as described.\n\n**2. Path Decomposition:**  A path to spell \"MATH\" consists of three segments:\n    * M to A\n    * A to T\n    * T to H\n\n**3. Count M to A paths:** Determine the number of paths from the origin (M) to each of the four points labeled 'A'.\n*   M(0,0) to A(1,0): 1 path (right)\n*   M(0,0) to A(-1,0): 1 path (left)\n*   M(0,0) to A(0,1): 1 path (up)\n*   M(0,0) to A(0,-1): 1 path (down)\n    Total paths from M to A = 1 + 1 + 1 + 1 = 4\n\n**4. Count A to T paths:** For *each* 'A' point, determine the number of paths to each of the 'T' points.\n*   A(1,0) to T(2,0): 1 path\n*   A(1,0) to T(1,1): 1 path\n*   A(1,0) to T(0,2): 0 paths\n*   A(1,0) to T(-1,1): 0 paths\n*   A(1,0) to T(-2,0): 0 paths\n*   A(1,0) to T(-1,-1): 0 paths\n*   A(1,0) to T(0,-2): 0 paths\n*   A(1,0) to T(1,-1): 1 path\n    Total paths from A(1,0) to T = 1 + 1 + 0 + 0 + 0 + 0 + 0 + 1 = 3\n\n*   A(-1,0) to T(2,0): 0 paths\n*   A(-1,0) to T(1,1): 0 paths\n*   A(-1,0) to T(0,2): 0 paths\n*   A(-1,0) to T(-1,1): 1 path\n*   A(-1,0) to T(-2,0): 1 path\n*   A(-1,0) to T(-1,-1): 1 path\n*   A(-1,0) to T(0,-2): 0 paths\n*   A(-1,0) to T(1,-1): 0 paths\n    Total paths from A(-1,0) to T = 0 + 0 + 0 + 1 + 1 + 1 + 0 + 0 = 3\n\n*   A(0,1) to T(2,0): 0 paths\n*   A(0,1) to T(1,1): 1 path\n*   A(0,1) to T(0,2): 1 path\n*   A(0,1) to T(-1,1): 1 path\n*   A(0,1) to T(-2,0): 0 paths\n*   A(0,1) to T(-1,-1): 0 paths\n*   A(0,1) to T(0,-2): 0 paths\n*   A(0,1) to T(1,-1): 0 paths\n    Total paths from A(0,1) to T = 0 + 1 + 1 + 1 + 0 + 0 + 0 + 0 = 3\n\n*   A(0,-1) to T(2,0): 0 paths\n*   A(0,-1) to T(1,1): 0 paths\n*   A(0,-1) to T(0,2): 0 paths\n*   A(0,-1) to T(-1,1): 0 paths\n*   A(0,-1) to T(-2,0): 0 paths\n*   A(0,-1) to T(-1,-1): 1 path\n*   A(0,-1) to T(0,-2): 1 path\n*   A(0,-1) to T(1,-1): 1 path\n    Total paths from A(0,-1) to T = 0 + 0 + 0 + 0 + 0 + 1 + 1 + 1 = 3\n\n**5. Count T to H paths:** For *each* 'T' point, determine the number of paths to each of the 'H' points.  This is tedious, but crucial.\n*T(2,0) to H*:\nT(2,0) to H(3,0): 1\nT(2,0) to H(2,1): 1\nT(2,0) to H(1,2): 0\nT(2,0) to H(0,3): 0\nT(2,0) to H(-1,2): 0\nT(2,0) to H(-2,1): 0\nT(2,0) to H(-3,0): 0\nT(2,0) to H(-2,-1): 0\nT(2,0) to H(-1,-2): 0\nT(2,0) to H(0,-3): 0\nT(2,0) to H(1,-2): 0\nT(2,0) to H(2,-1): 1\nTotal: 3\n\n*T(1,1) to H*:\nT(1,1) to H(3,0): 0\nT(1,1) to H(2,1): 1\nT(1,1) to H(1,2): 1\nT(1,1) to H(0,3): 0\nT(1,1) to H(-1,2): 0\nT(1,1) to H(-2,1): 0\nT(1,1) to H(-3,0): 0\nT(1,1) to H(-2,-1): 0\nT(1,1) to H(-1,-2): 0\nT(1,1) to H(0,-3): 0\nT(1,1) to H(1,-2): 0\nT(1,1) to H(2,-1): 0\nTotal: 2\n\n*T(0,2) to H*:\nT(0,2) to H(3,0): 0\nT(0,2) to H(2,1): 0\nT(0,2) to H(1,2): 1\nT(0,2) to H(0,3): 1\nT(0,2) to H(-1,2): 1\nT(0,2) to H(-2,1): 0\nT(0,2) to H(-3,0): 0\nT(0,2) to H(-2,-1): 0\nT(0,2) to H(-1,-2): 0\nT(0,2) to H(0,-3): 0\nT(0,2) to H(1,-2): 0\nT(0,2) to H(2,-1): 0\nTotal: 3\n\n*T(-1,1) to H*:\nT(-1,1) to H(3,0): 0\nT(-1,1) to H(2,1): 0\nT(-1,1) to H(1,2): 0\nT(-1,1) to H(0,3): 0\nT(-1,1) to H(-1,2): 1\nT(-1,1) to H(-2,1): 1\nT(-1,1) to H(-3,0): 0\nT(-1,1) to H(-2,-1): 0\nT(-1,1) to H(-1,-2): 0\nT(-1,1) to H(0,-3): 0\nT(-1,1) to H(1,-2): 0\nT(-1,1) to H(2,-1): 0\nTotal: 2\n\n*T(-2,0) to H*:\nT(-2,0) to H(3,0): 0\nT(-2,0) to H(2,1): 0\nT(-2,0) to H(1,2): 0\nT(-2,0) to H(0,3): 0\nT(-2,0) to H(-1,2): 0\nT(-2,0) to H(-2,1): 1\nT(-2,0) to H(-3,0): 1\nT(-2,0) to H(-2,-1): 1\nT(-2,0) to H(-1,-2): 0\nT(-2,0) to H(0,-3): 0\nT(-2,0) to H(1,-2): 0\nT(-2,0) to H(2,-1): 0\nTotal: 3\n\n*T(-1,-1) to H*:\nT(-1,-1) to H(3,0): 0\nT(-1,-1) to H(2,1): 0\nT(-1,-1) to H(1,2): 0\nT(-1,-1) to H(0,3): 0\nT(-1,-1) to H(-1,2): 0\nT(-1,-1) to H(-2,1): 0\nT(-1,-1) to H(-3,0): 0\nT(-1,-1) to H(-2,-1): 1\nT(-1,-1) to H(-1,-2): 1\nT(-1,-1) to H(0,-3): 0\nT(-1,-1) to H(1,-2): 0\nT(-1,-1) to H(2,-1): 0\nTotal: 2\n\n*T(0,-2) to H*:\nT(0,-2) to H(3,0): 0\nT(0,-2) to H(2,1): 0\nT(0,-2) to H(1,2): 0\nT(0,-2) to H(0,3): 0\nT(0,-2) to H(-1,2): 0\nT(0,-2) to H(-2,1): 0\nT(0,-2) to H(-3,0): 0\nT(0,-2) to H(-2,-1): 0\nT(0,-2) to H(-1,-2): 1\nT(0,-2) to H(0,-3): 1\nT(0,-2) to H(1,-2): 1\nT(0,-2) to H(2,-1): 0\nTotal: 3\n\n*T(1,-1) to H*:\nT(1,-1) to H(3,0): 0\nT(1,-1) to H(2,1): 0\nT(1,-1) to H(1,2): 0\nT(1,-1) to H(0,3): 0\nT(1,-1) to H(-1,2): 0\nT(1,-1) to H(-2,1): 0\nT(1,-1) to H(-3,0): 0\nT(1,-1) to H(-2,-1): 0\nT(1,-1) to H(-1,-2): 0\nT(1,-1) to H(0,-3): 0\nT(1,-1) to H(1,-2): 1\nT(1,-1) to H(2,-1): 1\nTotal: 2\n\n**6. Combine Path Counts:** For each possible path M -> A -> T -> H, multiply the number of paths for each segment (M->A, A->T, T->H).\n\n*   M->A(1,0)->T(2,0): 1 * 1 * 3 = 3\n*   M->A(1,0)->T(1,1): 1 * 1 * 2 = 2\n*   M->A(1,0)->T(1,-1): 1 * 1 * 2 = 2\n*   M->A(-1,0)->T(-1,1): 1 * 1 * 2 = 2\n*   M->A(-1,0)->T(-2,0): 1 * 1 * 3 = 3\n*   M->A(-1,0)->T(-1,-1): 1 * 1 * 2 = 2\n*   M->A(0,1)->T(1,1): 1 * 1 * 2 = 2\n*   M->A(0,1)->T(0,2): 1 * 1 * 3 = 3\n*   M->A(0,1)->T(-1,1): 1 * 1 * 2 = 2\n*   M->A(0,-1)->T(-1,-1): 1 * 1 * 2 = 2\n*   M->A(0,-1)->T(0,-2): 1 * 1 * 3 = 3\n*   M->A(0,-1)->T(1,-1): 1 * 1 * 2 = 2\n\n**7. Sum the Products:** Sum all the products calculated in step 6 to get the total number of distinct \"MATH\" paths.\n3 + 2 + 2 + 2 + 3 + 2 + 2 + 3 + 2 + 2 + 3 + 2 = 28\n\nTherefore, the total number of distinct paths to spell \"MATH\" is 28.\n\n```\n28\n```",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The Drafter has provided a detailed solution. Now, let's have the Critic review the solution for any potential errors in path counting or logic.\nNEXT: Critic\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "The draft answer looks correct and there are no errors. We are ready for the FinalAnswer.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The Critic has reviewed the solution and confirmed its correctness. We can now proceed to the final answer.\nNEXT: FinalAnswer\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "FINAL ANSWER: 28\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

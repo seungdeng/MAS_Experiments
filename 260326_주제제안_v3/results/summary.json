@@ -1,0 +1,11 @@
+{
+    "provider": "google",
+    "model": "gemini-2.0-flash",
+    "dataset": "math",
+    "total_problems": 10,
+    "processed": 10,
+    "errors": 0,
+    "correct": 8,
+    "incorrect": 2,
+    "accuracy": 80.0
+}

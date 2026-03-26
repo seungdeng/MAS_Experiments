@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "If $5x - 3 = 12$, what is the value of $5x + 3$?",
+    "task_id": "test/prealgebra/2002.json",
+    "level": "2",
+    "ground_truth": "18",
+    "predicted_answer": "18",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: If $5x - 3 = 12$, what is the value of $5x + 3$?\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to solve this problem:\n\n1.  **Solve for x:** Use the given equation $5x - 3 = 12$ to isolate $x$.\n2.  **Substitute x:** Once $x$ is found, substitute its value into the expression $5x + 3$.\n3.  **Calculate the result:** Simplify the expression to find the final numerical value.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "The plan is sound and provides a clear path to the solution. Let's proceed with drafting the solution.\nNEXT: Drafter\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "**Step 1: Solve for x**\n\nWe are given the equation $5x - 3 = 12$. To isolate $x$, we first add 3 to both sides of the equation:\n$5x - 3 + 3 = 12 + 3$\n$5x = 15$\n\nNow, we divide both sides by 5:\n$\\frac{5x}{5} = \\frac{15}{5}$\n$x = 3$\n\n**Step 2: Substitute x**\n\nWe need to find the value of $5x + 3$. We found that $x = 3$, so we substitute this value into the expression:\n$5x + 3 = 5(3) + 3$\n\n**Step 3: Calculate the result**\n\nNow we simplify the expression:\n$5(3) + 3 = 15 + 3 = 18$\n\nTherefore, the value of $5x + 3$ is 18.\n\n**Answer:** 18\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The Drafter has provided a clear and concise solution. Now, let's have the Critic verify the solution.\nNEXT: Critic\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "The draft answer looks correct and there are no errors. We are ready for the FinalAnswer.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The Critic has verified the solution. We can now proceed to the final answer.\nNEXT: FinalAnswer\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "FINAL ANSWER: 18\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

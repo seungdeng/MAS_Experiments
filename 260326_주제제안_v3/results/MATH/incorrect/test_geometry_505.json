@@ -1,0 +1,36 @@
+{
+    "is_correct": false,
+    "question": "In triangle $\\triangle ABC,$ we have that $AB = AC = 14$ and $BC = 26.$ What is the length of the shortest angle bisector in $ABC$? Express your answer in simplest radical form.",
+    "task_id": "test/geometry/505.json",
+    "level": "4",
+    "ground_truth": "3\\sqrt{3}",
+    "predicted_answer": "$\\frac{39\\sqrt{21}}{10}$",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: In triangle $\\triangle ABC,$ we have that $AB = AC = 14$ and $BC = 26.$ What is the length of the shortest angle bisector in $ABC$? Express your answer in simplest radical form.\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to find the length of the shortest angle bisector in $\\triangle ABC$:\n\n1. **Identify the shortest angle bisector:** Since $AB = AC = 14$ and $BC = 26$, $\\triangle ABC$ is an isosceles triangle. Because $BC > AB$, $\\angle A$ is the largest angle, and $\\angle B = \\angle C$ are the smallest angles. The shortest angle bisector will be from one of the base angles, i.e., from $B$ or $C$. Due to symmetry, the angle bisectors from $B$ and $C$ have the same length. We will calculate the length of the angle bisector from $B$.\n\n2. **Use the Angle Bisector Length Formula:**  Let $AD$ be the angle bisector from vertex $A$, $BE$ be the angle bisector from vertex $B$, and $CF$ be the angle bisector from vertex $C$. We want to find the length of $BE$. The length of an angle bisector can be found using the formula:\n   $BE^2 = AB \\cdot BC - AE \\cdot EC$.\n\n3. **Find AE and EC:** By the Angle Bisector Theorem, $\\frac{AE}{EC} = \\frac{AB}{BC} = \\frac{14}{26} = \\frac{7}{13}$. Also, $AE + EC = AC = 14$.  We can set up a system of equations to solve for $AE$ and $EC$.\n\n4. **Calculate BE:**  Substitute the values of $AB$, $BC$, $AE$, and $EC$ into the angle bisector length formula to find $BE^2$, and then take the square root to find $BE$.\n\n5. **Simplify the radical:** Express the answer in simplest radical form.\n\nNow, I will pass this plan to the Drafter to execute the calculations.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "Okay, I will execute the plan to find the length of the shortest angle bisector in $\\triangle ABC$.\n\n**Step 1: Identify the shortest angle bisector**\n\nAs determined in the plan, the shortest angle bisector is from vertex $B$ (or $C$), since $\\angle B = \\angle C$ are the smallest angles. We will find the length of the angle bisector $BE$.\n\n**Step 2: Use the Angle Bisector Length Formula**\n\nThe formula for the length of the angle bisector $BE$ is $BE^2 = AB \\cdot BC - AE \\cdot EC$.\n\n**Step 3: Find AE and EC**\n\nWe have $\\frac{AE}{EC} = \\frac{AB}{BC} = \\frac{14}{26} = \\frac{7}{13}$ and $AE + EC = AC = 14$.\nLet $AE = 7x$ and $EC = 13x$. Then $7x + 13x = 14$, so $20x = 14$, which gives $x = \\frac{14}{20} = \\frac{7}{10}$.\nTherefore, $AE = 7x = 7 \\cdot \\frac{7}{10} = \\frac{49}{10}$ and $EC = 13x = 13 \\cdot \\frac{7}{10} = \\frac{91}{10}$.\n\n**Step 4: Calculate BE**\n\nSubstitute the values into the angle bisector length formula:\n$BE^2 = AB \\cdot BC - AE \\cdot EC = 14 \\cdot 26 - \\frac{49}{10} \\cdot \\frac{91}{10} = 364 - \\frac{4459}{100} = \\frac{36400 - 4459}{100} = \\frac{31941}{100}$.\nThen $BE = \\sqrt{\\frac{31941}{100}} = \\frac{\\sqrt{31941}}{10}$.\n\n**Step 5: Simplify the radical**\n\nWe want to simplify $\\sqrt{31941}$.  We can try to find prime factors of 31941.\nSince the last digit is 1, it is not divisible by 2 or 5.\nThe sum of the digits is $3+1+9+4+1 = 18$, which is divisible by 3 and 9.\n$31941 = 9 \\cdot 3549$.\nNow we need to factor 3549. We can try dividing by primes. It is not divisible by 2, 3, or 5.\nTrying 7: $3549/7 \\approx 507$, so let's check $7 \\cdot 507 = 3549$.\nThus, $3549 = 7 \\cdot 507 = 7 \\cdot 3 \\cdot 169 = 7 \\cdot 3 \\cdot 13^2$.\nTherefore, $31941 = 3^2 \\cdot 3 \\cdot 7 \\cdot 13^2 = 3^3 \\cdot 7 \\cdot 13^2$.\nThen $\\sqrt{31941} = \\sqrt{3^3 \\cdot 7 \\cdot 13^2} = 13 \\cdot 3 \\sqrt{3 \\cdot 7} = 39\\sqrt{21}$.\n\nSo, $BE = \\frac{\\sqrt{31941}}{10} = \\frac{39\\sqrt{21}}{10}$.\n\nFinal Answer: The final answer is $\\boxed{\\frac{39\\sqrt{21}}{10}}$\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The draft answer looks correct and there are no errors. We are ready for the FinalAnswer.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "FINAL ANSWER: $\\frac{39\\sqrt{21}}{10}$\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

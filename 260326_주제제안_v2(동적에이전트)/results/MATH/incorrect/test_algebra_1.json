@@ -1,0 +1,51 @@
+{
+    "is_correct": false,
+    "question": "How many vertical asymptotes does the graph of $y=\\frac{2}{x^2+x-6}$ have?",
+    "task_id": "test/algebra/1.json",
+    "level": "3",
+    "ground_truth": "2",
+    "predicted_answer": "Two",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: How many vertical asymptotes does the graph of $y=\\frac{2}{x^2+x-6}$ have?\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to determine the number of vertical asymptotes:\n\n1. **Understand Vertical Asymptotes:** Vertical asymptotes occur where the denominator of a rational function equals zero, and the numerator is non-zero.\n\n2. **Factor the Denominator:** Factor the quadratic expression in the denominator, $x^2 + x - 6$.\n\n3. **Find the Zeros of the Denominator:** Determine the values of $x$ that make the factored denominator equal to zero. These are potential vertical asymptotes.\n\n4. **Check the Numerator:** Ensure the numerator is not also zero at the same x-values found in step 3. If the numerator and denominator are both zero at the same x-value, there is a hole instead of a vertical asymptote. Since the numerator is a constant (2), it will never be zero.\n\n5. **Count the Vertical Asymptotes:** The number of distinct x-values found in step 3 will be the number of vertical asymptotes.\n\nI will now pass this plan to the Drafter.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "The plan is sound and clearly outlines the steps to find the vertical asymptotes. The next step is to execute the plan.\nNEXT: Drafter\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "Okay, I will execute the plan to find the number of vertical asymptotes of the graph of $y=\\frac{2}{x^2+x-6}$.\n\n**Step 1: Understand Vertical Asymptotes**\n\nVertical asymptotes occur where the denominator of a rational function equals zero, and the numerator is non-zero.\n\n**Step 2: Factor the Denominator**\n\nThe denominator is $x^2 + x - 6$. We need to find two numbers that multiply to -6 and add to 1. These numbers are 3 and -2. So, the factored form is $(x+3)(x-2)$.\n\n**Step 3: Find the Zeros of the Denominator**\n\nWe set the factored denominator equal to zero: $(x+3)(x-2) = 0$.\nThis gives us two possible solutions:\n$x+3 = 0 \\Rightarrow x = -3$\n$x-2 = 0 \\Rightarrow x = 2$\n\n**Step 4: Check the Numerator**\n\nThe numerator is 2, which is never zero. Therefore, we have vertical asymptotes at $x=-3$ and $x=2$.\n\n**Step 5: Count the Vertical Asymptotes**\n\nWe found two distinct x-values where the denominator is zero and the numerator is non-zero: $x = -3$ and $x = 2$. Therefore, there are two vertical asymptotes.\n\n**Draft Answer:**\n\nTwo\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The Drafter has provided a solution. Now the Critic needs to verify the correctness.\nNEXT: Critic\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "The draft answer looks correct and there are no errors. We are ready for the FinalAnswer.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The Critic has confirmed the answer.\nNEXT: FinalAnswer\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "FINAL ANSWER: Two\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

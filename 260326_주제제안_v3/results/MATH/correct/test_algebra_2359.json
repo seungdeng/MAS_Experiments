@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "Connie is starting an exercise program. On June 1, she will do 25 sit-ups. Each day after that, she will increase her number of sit-ups by four. On which date during the month of June will Connie first do more than 100 sit-ups in one day?",
+    "task_id": "test/algebra/2359.json",
+    "level": "2",
+    "ground_truth": "\\text{June 20}",
+    "predicted_answer": "June 20",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: Connie is starting an exercise program. On June 1, she will do 25 sit-ups. Each day after that, she will increase her number of sit-ups by four. On which date during the month of June will Connie first do more than 100 sit-ups in one day?\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to solve this problem:\n\n1.  **Determine the daily increase:** Connie increases her sit-ups by 4 each day.\n2.  **Calculate the number of sit-ups for each day:** Starting with 25 sit-ups on June 1st, add 4 sit-ups for each subsequent day.\n3.  **Identify the day when sit-ups exceed 100:** Continue the calculation until the number of sit-ups is greater than 100.\n4.  **Determine the date:** Once the number of sit-ups exceeds 100, identify the corresponding date in June.\n5.  **Present the date as the final answer.**\n\nI will now pass this plan to the Drafter.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "The plan is clear and well-structured. The Drafter can now execute the plan.\nNEXT: Drafter\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "Okay, I will execute the plan to determine the date in June when Connie first does more than 100 sit-ups.\n\n**Step 1: Determine the daily increase:**\n\nThe problem states that Connie increases her sit-ups by 4 each day.\n\n**Step 2: Calculate the number of sit-ups for each day:**\n\n*   June 1: 25 sit-ups\n*   June 2: 25 + 4 = 29 sit-ups\n*   June 3: 29 + 4 = 33 sit-ups\n*   June 4: 33 + 4 = 37 sit-ups\n*   June 5: 37 + 4 = 41 sit-ups\n*   June 6: 41 + 4 = 45 sit-ups\n*   June 7: 45 + 4 = 49 sit-ups\n*   June 8: 49 + 4 = 53 sit-ups\n*   June 9: 53 + 4 = 57 sit-ups\n*   June 10: 57 + 4 = 61 sit-ups\n*   June 11: 61 + 4 = 65 sit-ups\n*   June 12: 65 + 4 = 69 sit-ups\n*   June 13: 69 + 4 = 73 sit-ups\n*   June 14: 73 + 4 = 77 sit-ups\n*   June 15: 77 + 4 = 81 sit-ups\n*   June 16: 81 + 4 = 85 sit-ups\n*   June 17: 85 + 4 = 89 sit-ups\n*   June 18: 89 + 4 = 93 sit-ups\n*   June 19: 93 + 4 = 97 sit-ups\n*   June 20: 97 + 4 = 101 sit-ups\n\n**Step 3: Identify the day when sit-ups exceed 100:**\n\nOn June 20, Connie does 101 sit-ups, which is more than 100.\n\n**Step 4: Determine the date:**\n\nThe date is June 20.\n\n**Step 5: Present the date as the final answer.**\n\nJune 20\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The Drafter has provided a detailed solution. Now the Critic needs to verify the correctness of the calculations and logic.\nNEXT: Critic\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "The draft answer looks correct and there are no errors. We are ready for the FinalAnswer.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The Critic has verified the solution. We can now proceed to the final answer.\nNEXT: FinalAnswer\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "FINAL ANSWER: June 20\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

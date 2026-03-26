@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
+    "task_id": "1",
+    "level": "gsm8k",
+    "ground_truth": "72",
+    "predicted_answer": "72",
+    "source": "GSM8K",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to solve the problem:\n\n1. **Calculate the number of clips sold in May:** Divide the number of clips sold in April by 2.\n2. **Calculate the total number of clips sold:** Add the number of clips sold in April to the number of clips sold in May.\n3. **Provide the final answer:** State the total number of clips sold.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "**Step 1: Calculate the number of clips sold in May**\n\nNatalia sold 48 clips in April. She sold half as many in May, so we need to divide the number of clips sold in April by 2.\n\nClips sold in May = 48 / 2 = 24\n\n**Step 2: Calculate the total number of clips sold**\n\nTo find the total number of clips sold in April and May, we add the number of clips sold in each month.\n\nTotal clips sold = Clips sold in April + Clips sold in May\nTotal clips sold = 48 + 24 = 72\n\n**Step 3: Provide the final answer**\n\nNatalia sold a total of 72 clips in April and May.\n\n**Answer:** 72\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The draft answer looks correct. The steps are clear, the calculations are accurate, and the final answer directly addresses the question.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The solution is well-explained and accurate. No changes are needed.\n\n**Answer:** 72\n",
+            "role": "user",
+            "name": "Editor"
+        },
+        {
+            "content": "The draft answer looks correct. The steps are clear, the calculations are accurate, and the final answer directly addresses the question.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The solution is correct and clearly explained. No changes are necessary.\n\n**Answer:** 72\n",
+            "role": "user",
+            "name": "Editor"
+        },
+        {
+            "content": "FINAL ANSWER: 72\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

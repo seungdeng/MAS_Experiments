@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "How many vertical asymptotes does the graph of $y=\\frac{2}{x^2+x-6}$ have?",
+    "task_id": "test/algebra/1.json",
+    "level": "3",
+    "ground_truth": "2",
+    "predicted_answer": "2",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: How many vertical asymptotes does the graph of $y=\\frac{2}{x^2+x-6}$ have?\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to determine the number of vertical asymptotes of the given function:\n\n1. **Identify potential vertical asymptotes:** Vertical asymptotes occur where the denominator of a rational function equals zero. Therefore, set the denominator, $x^2 + x - 6$, equal to zero.\n\n2. **Solve for x:** Solve the quadratic equation $x^2 + x - 6 = 0$ to find the values of $x$ that make the denominator zero.  This can be done by factoring or using the quadratic formula.\n\n3. **Check for removable discontinuities:**  If any of the values of $x$ found in step 2 also make the numerator zero, then there is a removable discontinuity (a hole) at that x-value instead of a vertical asymptote.  Since the numerator is a constant (2), it can never be zero. Therefore, we don't need to worry about removable discontinuities in this case.\n\n4. **Count the vertical asymptotes:** The number of distinct real solutions for $x$ found in step 2 will be the number of vertical asymptotes.\n\n5. **Provide the answer:** State the number of vertical asymptotes.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "The Planner has outlined a valid strategy to find the number of vertical asymptotes. The next step is to draft the solution.\nNEXT: Drafter\n",
+            "role": "user",
+            "name": "Router"
+        },
+        {
+            "content": "**Step 1: Identify potential vertical asymptotes**\n\nWe need to find the values of $x$ for which the denominator $x^2 + x - 6$ equals zero.\n\n**Step 2: Solve for x**\n\nWe solve the quadratic equation $x^2 + x - 6 = 0$. We can factor the quadratic as follows:\n$$(x+3)(x-2) = 0$$\nThis gives us two possible solutions:\n$$x+3 = 0 \\Rightarrow x = -3$$\n$$x-2 = 0 \\Rightarrow x = 2$$\n\n**Step 3: Check for removable discontinuities**\n\nThe numerator is 2, which is never zero. Therefore, neither $x=-3$ nor $x=2$ are removable discontinuities.\n\n**Step 4: Count the vertical asymptotes**\n\nWe found two distinct real solutions for $x$: $x = -3$ and $x = 2$. Therefore, there are two vertical asymptotes.\n\n**Step 5: Provide the answer**\n\nThe graph of $y=\\frac{2}{x^2+x-6}$ has 2 vertical asymptotes.\n\n**Answer:** 2\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The Drafter has provided a solution. Now the Critic needs to review it for any errors.\nNEXT: Critic\n",
+            "role": "user",
+            "name": "Router"
+        },
+        {
+            "content": "The draft answer looks correct and there are no errors. We are ready for the FinalAnswer.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The Critic has approved the solution.\nNEXT: FinalAnswer\n",
+            "role": "user",
+            "name": "Router"
+        },
+        {
+            "content": "FINAL ANSWER: 2\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

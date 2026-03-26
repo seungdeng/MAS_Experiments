@@ -1,0 +1,4 @@
+pyautogen==0.2.35
+litellm
+openai
+google-generativeai

@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "One sphere is centered at $(3,-5,7)$ with radius $5 \\sqrt{5}.$  A second sphere is centered at $(0,1,1)$ with radius $2 \\sqrt{17}.$  The two spheres intersect in a circle.  Find the radius of this circle.",
+    "task_id": "test/precalculus/396.json",
+    "level": "5",
+    "ground_truth": "\\frac{2 \\sqrt{149}}{3}",
+    "predicted_answer": "$\\frac{2 \\sqrt{149}}{3}$",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: One sphere is centered at $(3,-5,7)$ with radius $5 \\sqrt{5}.$  A second sphere is centered at $(0,1,1)$ with radius $2 \\sqrt{17}.$  The two spheres intersect in a circle.  Find the radius of this circle.\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to find the radius of the circle of intersection of the two spheres:\n\n1. **Find the distance between the centers of the two spheres.** This distance, $d$, will be crucial in relating the radii of the spheres and the radius of the circle of intersection.\n\n2. **Let $r_1$ and $r_2$ be the radii of the two spheres, and let $r$ be the radius of the circle of intersection.** Let $h_1$ and $h_2$ be the distances from the center of each sphere to the plane containing the circle of intersection.  Then $h_1 + h_2 = d.$\n\n3. **Relate $r$, $r_1$, and $h_1$ using the Pythagorean theorem.** We have $r^2 + h_1^2 = r_1^2.$\n\n4. **Relate $r$, $r_2$, and $h_2$ using the Pythagorean theorem.** We have $r^2 + h_2^2 = r_2^2.$\n\n5. **Solve for $h_1$ and $h_2$ in terms of $d$, $r_1$, and $r_2$.** We have the system of equations\n   \\begin{align*} h_1 + h_2 &= d \\\\ r^2 + h_1^2 &= r_1^2 \\\\ r^2 + h_2^2 &= r_2^2 \\end{align*}From $h_2 = d - h_1,$ $r^2 + (d - h_1)^2 = r_2^2,$ so $r^2 = r_2^2 - (d - h_1)^2.$  Also, $r^2 = r_1^2 - h_1^2.$  Thus,\n   $$r_1^2 - h_1^2 = r_2^2 - (d - h_1)^2 = r_2^2 - (d^2 - 2dh_1 + h_1^2),$$so $r_1^2 = r_2^2 - d^2 + 2dh_1.$  Then $2dh_1 = r_1^2 - r_2^2 + d^2,$ so $h_1 = \\frac{r_1^2 - r_2^2 + d^2}{2d}.$  Then $h_2 = d - h_1 = d - \\frac{r_1^2 - r_2^2 + d^2}{2d} = \\frac{2d^2 - r_1^2 + r_2^2 - d^2}{2d} = \\frac{d^2 + r_2^2 - r_1^2}{2d}.$\n\n6. **Substitute the value of $h_1$ into $r^2 + h_1^2 = r_1^2$ to find $r^2$.** Then $r^2 = r_1^2 - h_1^2 = r_1^2 - \\left( \\frac{r_1^2 - r_2^2 + d^2}{2d} \\right)^2.$\n\n7. **Take the square root to find $r$.**\n\nNow I will pass this plan to the Drafter.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "The plan is well-structured and provides a clear path to the solution. Now, the Drafter needs to execute the calculations.\nNEXT: Drafter\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "Okay, I will execute the plan.\n\n**Step 1: Find the distance between the centers of the two spheres.**\n\nThe centers are $(3, -5, 7)$ and $(0, 1, 1).$  The distance between them is\n\\begin{align*} d &= \\sqrt{(3 - 0)^2 + (-5 - 1)^2 + (7 - 1)^2} \\\\ &= \\sqrt{3^2 + (-6)^2 + 6^2} \\\\ &= \\sqrt{9 + 36 + 36} \\\\ &= \\sqrt{81} \\\\ &= 9. \\end{align*}\n\n**Step 2: Let $r_1$ and $r_2$ be the radii of the two spheres, and let $r$ be the radius of the circle of intersection.** Let $h_1$ and $h_2$ be the distances from the center of each sphere to the plane containing the circle of intersection.  Then $h_1 + h_2 = d.$\n\nWe have $r_1 = 5 \\sqrt{5}$ and $r_2 = 2 \\sqrt{17}.$\n\n**Step 3: Relate $r$, $r_1$, and $h_1$ using the Pythagorean theorem.** We have $r^2 + h_1^2 = r_1^2.$\n\n**Step 4: Relate $r$, $r_2$, and $h_2$ using the Pythagorean theorem.** We have $r^2 + h_2^2 = r_2^2.$\n\n**Step 5: Solve for $h_1$ and $h_2$ in terms of $d$, $r_1$, and $r_2$.**\n\nWe have $h_1 = \\frac{r_1^2 - r_2^2 + d^2}{2d}$ and $h_2 = \\frac{d^2 + r_2^2 - r_1^2}{2d}.$\nThen\n\\begin{align*} h_1 &= \\frac{(5 \\sqrt{5})^2 - (2 \\sqrt{17})^2 + 9^2}{2(9)} \\\\ &= \\frac{125 - 68 + 81}{18} \\\\ &= \\frac{138}{18} = \\frac{23}{3}. \\end{align*}Also,\n\\begin{align*} h_2 &= \\frac{9^2 + (2 \\sqrt{17})^2 - (5 \\sqrt{5})^2}{2(9)} \\\\ &= \\frac{81 + 68 - 125}{18} \\\\ &= \\frac{24}{18} = \\frac{4}{3}. \\end{align*}Note that $h_1 + h_2 = \\frac{23}{3} + \\frac{4}{3} = \\frac{27}{3} = 9 = d.$\n\n**Step 6: Substitute the value of $h_1$ into $r^2 + h_1^2 = r_1^2$ to find $r^2$.**\n\nThen\n\\begin{align*} r^2 &= r_1^2 - h_1^2 \\\\ &= (5 \\sqrt{5})^2 - \\left( \\frac{23}{3} \\right)^2 \\\\ &= 125 - \\frac{529}{9} \\\\ &= \\frac{1125 - 529}{9} \\\\ &= \\frac{596}{9}. \\end{align*}\n\n**Step 7: Take the square root to find $r$.**\n\nThen $r = \\sqrt{\\frac{596}{9}} = \\frac{\\sqrt{596}}{3} = \\frac{\\sqrt{4 \\cdot 149}}{3} = \\frac{2 \\sqrt{149}}{3}.$\n\nFinal Answer: The final answer is $\\boxed{\\frac{2 \\sqrt{149}}{3}}$\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The Drafter has provided a detailed solution. Now, the Critic needs to verify the calculations and logic.\nNEXT: Critic\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "The draft answer looks correct and there are no errors. We are ready for the FinalAnswer.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The Critic has verified the solution. We can now proceed to the final answer.\nNEXT: FinalAnswer\n",
+            "role": "user",
+            "name": "Orchestrator"
+        },
+        {
+            "content": "FINAL ANSWER: $\\frac{2 \\sqrt{149}}{3}$\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

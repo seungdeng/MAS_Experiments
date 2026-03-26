@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "In triangle $\\triangle ABC,$ we have that $AB = AC = 14$ and $BC = 26.$ What is the length of the shortest angle bisector in $ABC$? Express your answer in simplest radical form.",
+    "task_id": "test/geometry/505.json",
+    "level": "4",
+    "ground_truth": "3\\sqrt{3}",
+    "predicted_answer": "$3\\sqrt{3}$",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: In triangle $\\triangle ABC,$ we have that $AB = AC = 14$ and $BC = 26.$ What is the length of the shortest angle bisector in $ABC$? Express your answer in simplest radical form.\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to solve this problem:\n\n1. **Recognize the triangle type:** Since $AB = AC$, $\\triangle ABC$ is an isosceles triangle.\n\n2. **Identify the shortest angle bisector:** In an isosceles triangle, the shortest angle bisector is the one that bisects the largest angle. Since $BC > AB = AC$, $\\angle A$ is the largest angle. Therefore, we need to find the length of the angle bisector from $A$ to $BC$. Let's call the point where the angle bisector from $A$ intersects $BC$ as $D$.\n\n3. **Use properties of isosceles triangles and angle bisectors:** In an isosceles triangle, the angle bisector of the vertex angle (the angle between the two equal sides) is also the median and the altitude. Thus, $AD$ is perpendicular to $BC$ and $BD = CD = \\frac{BC}{2} = \\frac{26}{2} = 13$.\n\n4. **Use the Pythagorean theorem to find the length of the angle bisector:**  Since $\\triangle ADB$ is a right triangle, we can use the Pythagorean theorem to find $AD$.  We have $AD^2 + BD^2 = AB^2$, so $AD^2 + 13^2 = 14^2$.\n\n5. **Solve for AD:** Calculate $AD$ and express it in simplest radical form.\n\nNow, I will pass this plan to the Drafter.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "Okay, I will execute the plan to find the length of the shortest angle bisector in $\\triangle ABC$.\n\n1.  **Recognize the triangle type:** $\\triangle ABC$ is an isosceles triangle with $AB = AC = 14$.\n\n2.  **Identify the shortest angle bisector:** Since $BC = 26 > AB = AC = 14$, $\\angle A$ is the largest angle. Thus, the shortest angle bisector is the one from $A$ to $BC$. Let $D$ be the intersection of the angle bisector from $A$ with $BC$.\n\n3.  **Use properties of isosceles triangles and angle bisectors:** Since $\\triangle ABC$ is isosceles and $AD$ bisects $\\angle A$, $AD$ is also the median and altitude. Therefore, $AD \\perp BC$ and $BD = CD = \\frac{BC}{2} = \\frac{26}{2} = 13$.\n\n4.  **Use the Pythagorean theorem to find the length of the angle bisector:** In right triangle $\\triangle ADB$, we have $AD^2 + BD^2 = AB^2$.  So, $AD^2 + 13^2 = 14^2$.\n\n5.  **Solve for AD:**\n    $AD^2 + 13^2 = 14^2$\n    $AD^2 + 169 = 196$\n    $AD^2 = 196 - 169$\n    $AD^2 = 27$\n    $AD = \\sqrt{27} = \\sqrt{9 \\cdot 3} = 3\\sqrt{3}$\n\nTherefore, the length of the shortest angle bisector is $3\\sqrt{3}$.\n\nFINAL ANSWER: $3\\sqrt{3}$\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The draft answer looks correct. The reasoning is sound and follows the plan. The calculations are accurate, and the final answer is in the simplest radical form.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "The solution is well-explained and accurate. No changes are needed.\n\nFINAL ANSWER: $3\\sqrt{3}$\n",
+            "role": "user",
+            "name": "Editor"
+        },
+        {
+            "content": "The draft answer looks correct\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "No further refinement is needed.\n\nFINAL ANSWER: $3\\sqrt{3}$\n",
+            "role": "user",
+            "name": "Editor"
+        },
+        {
+            "content": "FINAL ANSWER: $3\\sqrt{3}$\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

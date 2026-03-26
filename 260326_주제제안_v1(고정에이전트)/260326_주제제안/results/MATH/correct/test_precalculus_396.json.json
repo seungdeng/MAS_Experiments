@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "One sphere is centered at $(3,-5,7)$ with radius $5 \\sqrt{5}.$  A second sphere is centered at $(0,1,1)$ with radius $2 \\sqrt{17}.$  The two spheres intersect in a circle.  Find the radius of this circle.",
+    "task_id": "test/precalculus/396.json",
+    "level": "5",
+    "ground_truth": "\\frac{2 \\sqrt{149}}{3}",
+    "predicted_answer": "$\\frac{2 \\sqrt{149}}{3}$",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: One sphere is centered at $(3,-5,7)$ with radius $5 \\sqrt{5}.$  A second sphere is centered at $(0,1,1)$ with radius $2 \\sqrt{17}.$  The two spheres intersect in a circle.  Find the radius of this circle.\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's my plan to find the radius of the circle of intersection of the two spheres:\n\n1. **Find the distance between the centers of the two spheres.** Let the centers be $C_1 = (3, -5, 7)$ and $C_2 = (0, 1, 1).$  Then the distance $d$ between the centers is\n\\[d = \\sqrt{(3 - 0)^2 + (-5 - 1)^2 + (7 - 1)^2} = \\sqrt{3^2 + (-6)^2 + 6^2} = \\sqrt{9 + 36 + 36} = \\sqrt{81} = 9.\\]\n\n2. **Let $r_1$ and $r_2$ be the radii of the spheres.** We are given $r_1 = 5 \\sqrt{5}$ and $r_2 = 2 \\sqrt{17}.$\n\n3. **Let $r$ be the radius of the circle of intersection, and let $h_1$ and $h_2$ be the distances from the centers of the spheres to the plane containing the circle of intersection.** Then $h_1 + h_2 = d = 9.$  Also, by the Pythagorean theorem,\n\\begin{align*} r^2 + h_1^2 &= r_1^2 = (5 \\sqrt{5})^2 = 125, \\\\ r^2 + h_2^2 &= r_2^2 = (2 \\sqrt{17})^2 = 68. \\end{align*}\n\n4. **Solve for $h_1$ and $h_2$.**  From $h_1 + h_2 = 9,$ $h_2 = 9 - h_1.$  Then\n\\begin{align*} r^2 + h_1^2 &= 125, \\\\ r^2 + (9 - h_1)^2 &= 68. \\end{align*}Subtracting these equations, we obtain\n\\[h_1^2 - (9 - h_1)^2 = 125 - 68 = 57.\\]Then $h_1^2 - (81 - 18h_1 + h_1^2) = 57,$ so $18h_1 - 81 = 57,$ $18h_1 = 138,$ and $h_1 = \\frac{138}{18} = \\frac{23}{3}.$  Then $h_2 = 9 - \\frac{23}{3} = \\frac{27 - 23}{3} = \\frac{4}{3}.$\n\n5. **Solve for $r$.**  We have $r^2 + h_1^2 = 125,$ so\n\\[r^2 = 125 - h_1^2 = 125 - \\left( \\frac{23}{3} \\right)^2 = 125 - \\frac{529}{9} = \\frac{1125 - 529}{9} = \\frac{596}{9}.\\]Then $r = \\sqrt{\\frac{596}{9}} = \\frac{2 \\sqrt{149}}{3}.$\n\n6. **Pass the value of r to the Drafter.**\n\nFINAL ANSWER: $\\frac{2 \\sqrt{149}}{3}$\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "Okay, let's follow the plan.\n\n**Step 1: Find the distance between the centers of the two spheres.**\n\nThe centers are $C_1 = (3, -5, 7)$ and $C_2 = (0, 1, 1).$  The distance $d$ between the centers is\n\\[d = \\sqrt{(3 - 0)^2 + (-5 - 1)^2 + (7 - 1)^2} = \\sqrt{3^2 + (-6)^2 + 6^2} = \\sqrt{9 + 36 + 36} = \\sqrt{81} = 9.\\]\n\n**Step 2: Let $r_1$ and $r_2$ be the radii of the spheres.**\n\nWe are given $r_1 = 5 \\sqrt{5}$ and $r_2 = 2 \\sqrt{17}.$\n\n**Step 3: Let $r$ be the radius of the circle of intersection, and let $h_1$ and $h_2$ be the distances from the centers of the spheres to the plane containing the circle of intersection.**\n\nThen $h_1 + h_2 = d = 9.$  Also, by the Pythagorean theorem,\n\\begin{align*} r^2 + h_1^2 &= r_1^2 = (5 \\sqrt{5})^2 = 125, \\\\ r^2 + h_2^2 &= r_2^2 = (2 \\sqrt{17})^2 = 68. \\end{align*}\n\n**Step 4: Solve for $h_1$ and $h_2$.**\n\nFrom $h_1 + h_2 = 9,$ $h_2 = 9 - h_1.$  Then\n\\begin{align*} r^2 + h_1^2 &= 125, \\\\ r^2 + (9 - h_1)^2 &= 68. \\end{align*}Subtracting these equations, we obtain\n\\[h_1^2 - (9 - h_1)^2 = 125 - 68 = 57.\\]Then $h_1^2 - (81 - 18h_1 + h_1^2) = 57,$ so $18h_1 - 81 = 57,$ $18h_1 = 138,$ and $h_1 = \\frac{138}{18} = \\frac{23}{3}.$  Then $h_2 = 9 - \\frac{23}{3} = \\frac{27 - 23}{3} = \\frac{4}{3}.$\n\n**Step 5: Solve for $r$.**\n\nWe have $r^2 + h_1^2 = 125,$ so\n\\[r^2 = 125 - h_1^2 = 125 - \\left( \\frac{23}{3} \\right)^2 = 125 - \\frac{529}{9} = \\frac{1125 - 529}{9} = \\frac{596}{9}.\\]Then $r = \\sqrt{\\frac{596}{9}} = \\frac{\\sqrt{596}}{3} = \\frac{\\sqrt{4 \\cdot 149}}{3} = \\frac{2 \\sqrt{149}}{3}.$\n\n**Step 6: Pass the value of r to the Drafter.**\n\nThe radius of the circle of intersection is $\\frac{2 \\sqrt{149}}{3}.$\n\nFINAL ANSWER: $\\frac{2 \\sqrt{149}}{3}$\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The draft answer looks correct. All the steps are logical and the calculations are accurate. The final answer is consistent with the intermediate steps.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "FINAL ANSWER: $\\frac{2 \\sqrt{149}}{3}$\n",
+            "role": "user",
+            "name": "Editor"
+        },
+        {
+            "content": "The final answer is $\\frac{2 \\sqrt{149}}{3}$.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "Okay, the final answer is $\\frac{2 \\sqrt{149}}{3}$.\n",
+            "role": "user",
+            "name": "Editor"
+        },
+        {
+            "content": "FINAL ANSWER: $\\frac{2 \\sqrt{149}}{3}$\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}

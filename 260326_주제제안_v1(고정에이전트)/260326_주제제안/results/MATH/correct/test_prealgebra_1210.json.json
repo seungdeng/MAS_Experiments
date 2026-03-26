@@ -1,0 +1,51 @@
+{
+    "is_correct": true,
+    "question": "$AB = 20$ cm, $m \\angle A = 30^\\circ$, and $m \\angle C = 45^\\circ$. Express the number of centimeters in the length of $\\overline{BC}$ in simplest radical form. [asy]\nimport olympiad; size(200); import geometry; import graph; defaultpen(linewidth(0.8));\npair A = origin, B = (10*sqrt(3),10), C = (10*sqrt(3) + 10,0);\ndraw(Label(\"$20$\",align=NW),A--B); draw(B--C); draw(A--C);\nlabel(\"$A$\",A,W); label(\"$B$\",B,N); label(\"$C$\",C,E);\n[/asy]",
+    "task_id": "test/prealgebra/1210.json",
+    "level": "5",
+    "ground_truth": "10\\sqrt{2}",
+    "predicted_answer": "$10\\sqrt{2}$",
+    "source": "MATH",
+    "history": [
+        {
+            "content": "Please solve the following problem step by step.\n\nQuestion: $AB = 20$ cm, $m \\angle A = 30^\\circ$, and $m \\angle C = 45^\\circ$. Express the number of centimeters in the length of $\\overline{BC}$ in simplest radical form. [asy]\nimport olympiad; size(200); import geometry; import graph; defaultpen(linewidth(0.8));\npair A = origin, B = (10*sqrt(3),10), C = (10*sqrt(3) + 10,0);\ndraw(Label(\"$20$\",align=NW),A--B); draw(B--C); draw(A--C);\nlabel(\"$A$\",A,W); label(\"$B$\",B,N); label(\"$C$\",C,E);\n[/asy]\n\nProvide the answer as a precise, short value (number, word, or phrase).",
+            "role": "user",
+            "name": "UserProxy"
+        },
+        {
+            "content": "Here's the plan to solve this problem:\n\n1. **Find the measure of angle B:** Use the fact that the sum of the angles in a triangle is 180 degrees to find $m \\angle B$.\n\n2. **Apply the Law of Sines:** Use the Law of Sines to relate the sides and angles of the triangle. Specifically, set up the proportion $\\frac{BC}{\\sin A} = \\frac{AB}{\\sin C}$.\n\n3. **Substitute known values:** Substitute the given values of $AB$, $m \\angle A$, and $m \\angle C$ into the Law of Sines equation.\n\n4. **Solve for BC:** Solve the equation for the length of $BC$.\n\n5. **Simplify the radical:** Simplify the expression for $BC$ into simplest radical form.\n",
+            "role": "user",
+            "name": "Planner"
+        },
+        {
+            "content": "Okay, let's follow the plan.\n\n**Step 1: Find the measure of angle B**\n\nThe sum of the angles in a triangle is 180 degrees. Therefore,\n$m \\angle A + m \\angle B + m \\angle C = 180^\\circ$.\nWe are given $m \\angle A = 30^\\circ$ and $m \\angle C = 45^\\circ$. Substituting these values, we get\n$30^\\circ + m \\angle B + 45^\\circ = 180^\\circ$\n$m \\angle B + 75^\\circ = 180^\\circ$\n$m \\angle B = 180^\\circ - 75^\\circ = 105^\\circ$.\n\n**Step 2: Apply the Law of Sines**\n\nThe Law of Sines states that $\\frac{a}{\\sin A} = \\frac{b}{\\sin B} = \\frac{c}{\\sin C}$, where $a$, $b$, and $c$ are the side lengths opposite angles $A$, $B$, and $C$, respectively. In our case, $AB = c = 20$, $BC = a$, $m \\angle A = 30^\\circ$, and $m \\angle C = 45^\\circ$. We want to find $BC = a$.  So, we use the proportion\n$\\frac{BC}{\\sin A} = \\frac{AB}{\\sin C}$.\n\n**Step 3: Substitute known values**\n\nSubstituting the given values, we have\n$\\frac{BC}{\\sin 30^\\circ} = \\frac{20}{\\sin 45^\\circ}$.\n\n**Step 4: Solve for BC**\n\nWe know that $\\sin 30^\\circ = \\frac{1}{2}$ and $\\sin 45^\\circ = \\frac{\\sqrt{2}}{2}$. Substituting these values, we get\n$\\frac{BC}{\\frac{1}{2}} = \\frac{20}{\\frac{\\sqrt{2}}{2}}$\n$2 \\cdot BC = \\frac{20 \\cdot 2}{\\sqrt{2}}$\n$2 \\cdot BC = \\frac{40}{\\sqrt{2}}$\n$BC = \\frac{20}{\\sqrt{2}}$.\n\n**Step 5: Simplify the radical**\n\nTo simplify the radical, we multiply the numerator and denominator by $\\sqrt{2}$:\n$BC = \\frac{20}{\\sqrt{2}} \\cdot \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{20\\sqrt{2}}{2} = 10\\sqrt{2}$.\n\nTherefore, the length of $\\overline{BC}$ is $10\\sqrt{2}$ cm.\n\nFinal Answer: The final answer is $\\boxed{10\\sqrt{2}}$\n",
+            "role": "user",
+            "name": "Drafter"
+        },
+        {
+            "content": "The draft answer looks correct. The steps are clear and logical, and the calculations are accurate. The Law of Sines is correctly applied, and the radical is simplified appropriately.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "Final Answer: The final answer is $\\boxed{10\\sqrt{2}}$\n",
+            "role": "user",
+            "name": "Editor"
+        },
+        {
+            "content": "The final answer is correct.\n",
+            "role": "user",
+            "name": "Critic"
+        },
+        {
+            "content": "Okay, great! Since the final answer is correct and the solution is well-explained, there's nothing to refine or correct. The final answer remains:\n\nFinal Answer: The final answer is $\\boxed{10\\sqrt{2}}$\n",
+            "role": "user",
+            "name": "Editor"
+        },
+        {
+            "content": "FINAL ANSWER: $10\\sqrt{2}$\nTERMINATE\n",
+            "role": "user",
+            "name": "FinalAnswer"
+        }
+    ]
+}
