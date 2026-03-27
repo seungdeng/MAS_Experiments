@@ -1,8 +1,6 @@
 ## 멀티에이전트 실험실
 
 
-## 📜 License
-
 <p align="center">
   <img src="https://img.shields.io/badge/License-MIT-green.svg"/>
 </p>
