@@ -7,3 +7,5 @@
 0629_SCI/ml-32m/ratings.csv
 0629_SCI/ml-32m/README.txt
 0629_SCI/ml-32m/tags.csv
+0629_SCI/adap_results_32m/results_summary.json
+0629_SCI/adap_results_32m/user_feature_matrix.csv
