@@ -9,3 +9,14 @@
 0629_SCI/ml-32m/tags.csv
 0629_SCI/adap_results_32m/results_summary.json
 0629_SCI/adap_results_32m/user_feature_matrix.csv
+0629_SCI/adap_results_32m_A_seen_flag/user_feature_matrix.csv
+0629_SCI/adap_phase1_results/user_factor_weights.csv
+0629_SCI/adap_phase1_results/user_factor_weights_v2.csv
+0629_SCI/adap_results_32m_C_posthoc/user_feature_matrix.csv
+0629_SCI/adap_results_32m_B_deviation/user_feature_matrix.csv
+0629_SCI/맨처음실험결과(결측값 2.5)/adap_results_32m/user_feature_matrix.csv
+0629_SCI/A,B안 실험결과(구)/adap_results_32m_A_seen_flag/user_feature_matrix.csv
+0629_SCI/A,B안 실험결과(구)/adap_results_32m_B_deviation/user_feature_matrix.csv
+
+*.csv
+*.json
