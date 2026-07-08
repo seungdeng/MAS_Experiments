@@ -21,3 +21,6 @@
 *.csv
 *.json
 .env
+
+
+!lab_docs.json
