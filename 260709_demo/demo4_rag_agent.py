@@ -15,7 +15,7 @@ load_dotenv()
 client = OpenAI()
 
 # ── 1. 벡터DB 구축 (인덱싱 단계) ──
-db = chromadb.Client()  # 인메모리 모드. PersistentClient(path=...)로 바꾸면 디스크 저장
+db = chromadb.Client()  #  PersistentClient(path=...)로 수정하면 저장 가능
 collection = db.create_collection(
     name="lab_docs",
     embedding_function=OpenAIEmbeddingFunction(model_name="text-embedding-3-small"),  # 1536차원 벡터 생성

@@ -5,7 +5,9 @@
 - 라이브러리: openai (시연 1과 동일. 루프는 프레임워크 없이 순수 파이썬 while문으로 구현됨을 보여주는 것이 포인트)
 """
 from openai import OpenAI
+from dotenv import load_dotenv
 
+load_dotenv() 
 client = OpenAI()
 
 
@@ -14,14 +16,14 @@ def call(role: str, user_input: str) -> str:
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": role},
                   {"role": "user", "content": user_input}],
-        temperature=0.5,
+        temperature=0.4,
     )
     return resp.choices[0].message.content
 
 
 if __name__ == "__main__":
     task = "초등학생도 이해할 수 있는 '데이터베이스 인덱스' 설명문 3문장"
-    MAX_ITER = 3          # 무한루프 방지용 상한 (실무에서 필수)
+    MAX_ITER = 5          # 무한루프 방지 max iteration 설정
     feedback = "없음"
 
     for i in range(1, MAX_ITER + 1):
@@ -39,9 +41,9 @@ if __name__ == "__main__":
         )
         print(f"[{i}회차 평가] {verdict}\n")
 
-        if verdict.strip().startswith("PASS"):   # 종료조건 1: 합격
+        if verdict.strip().startswith("PASS"):   # 종료조건 1: PASS 반환
             print(f"=> {i}회 만에 수렴")
             break
         feedback = verdict                        # FAIL 사유를 다음 반복의 입력으로 전달
-    else:                                         # 종료조건 2: 상한 도달 (for-else: break 없이 끝난 경우)
+    else:                                         # 종료조건 2: max iteration 도달
         print("=> 최대 반복 도달, 마지막 초안 채택")

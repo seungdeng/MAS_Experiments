@@ -19,7 +19,7 @@ def agent(role: str, user_input: str) -> str:
             {"role": "system", "content": role},        # 역할 정의
             {"role": "user", "content": user_input},    # 이전 단계 출력이 여기로 들어옴
         ],
-        temperature=0.3,
+        temperature=0.4,
     )
     return resp.choices[0].message.content
 # resp                          # ChatCompletion 객체 (id, model, usage 등 메타데이터 포함)
