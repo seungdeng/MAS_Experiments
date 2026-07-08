@@ -1,54 +1,60 @@
 """
-루프(Loop) 구조 — Generator-Critic 패턴
-- 핵심: 생성 → 평가 → (불합격 시) 피드백 반영 재생성. 종료조건 = "합격 판정" or "최대 반복 횟수".
-- 오류 귀인 연구와의 연결점: 루프 구조에서는 '몇 번째 반복의 어느 에이전트가 실패 원인인가'가 문제가 됨.
-- 라이브러리: openai (시연 1과 동일. 루프는 프레임워크 없이 순수 파이썬 while문으로 구현됨을 보여주는 것이 포인트)
+병렬(Parallel) 구조: anyio 기반 비동기 처리
+- 핵심: 서로 의존성 없는 에이전트들은 동시에 호출 → 총 소요시간 = max(개별 시간). 순차 대비 latency 감소
+- 라이브러리:
+    anyio  : asyncio/trio를 통합하는 비동기 실행 라이브러리
+    openai : AsyncOpenAI 클라이언트가 비동기 호출(await)을 지원
 """
-from openai import OpenAI
-from dotenv import load_dotenv
+import time
+import anyio                       # anyio.run(): 이벤트 루프 실행 / create_task_group(): 병렬 태스크 관리
+from dotenv import load_dotenv     # .env 파일 로더
+from openai import AsyncOpenAI    # 동기 OpenAI와 동일 API, 단 호출 앞에 await 필요
 
-load_dotenv() 
-client = OpenAI()
+load_dotenv()  # .env의 OPENAI_API_KEY를 환경변수로 주입
+client = AsyncOpenAI()
+
+results: dict[str, str] = {}       # 태스크들이 결과를 담을 공유 딕셔너리 (task group 종료 후 접근)
 
 
-def call(role: str, user_input: str) -> str:
-    resp = client.chat.completions.create(
+async def agent(name: str, role: str, user_input: str) -> None:
+    """비동기 에이전트: await 지점에서 제어권을 양보 → 다른 에이전트가 동시에 진행됨"""
+    resp = await client.chat.completions.create(   # await: I/O 대기 중 다른 태스크 실행 허용
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": role},
                   {"role": "user", "content": user_input}],
-        temperature=0.4,
     )
-    return resp.choices[0].message.content
+    results[name] = resp.choices[0].message.content
+
+
+async def main() -> None:
+    query = "멀티에이전트 시스템의 장점"
+    t0 = time.perf_counter()
+
+    # ── task group: 블록 내 start_soon()된 태스크가 전부 끝나야 블록 탈출 (구조적 동시성) ──
+    async with anyio.create_task_group() as tg:
+        tg.start_soon(agent, "기술", "기술 관점에서 2문장으로 답하라.", query)
+        tg.start_soon(agent, "비용", "비용 관점에서 2문장으로 답하라.", query)
+        tg.start_soon(agent, "리스크", "리스크 관점에서 2문장으로 답하라.", query)
+    # 여기 도달 = 3개 에이전트 모두 완료 보장
+
+    print(f"3개 에이전트 병렬 실행: {time.perf_counter() - t0:.1f}초\n")
+
+    # ── 개별 에이전트 결과 확인 (에이전트 내부가 아닌 완료 후 일괄 출력 → 병렬 중 출력 뒤섞임 방지) ──
+    for name, text in results.items():
+        print(f"[{name} 에이전트]\n{text}\n")
+
+    # ── Aggregator: 병렬 결과를 모아 최종 종합 (병렬 → 순차 결합 패턴) ──
+    merged = "\n".join(f"[{k}] {v}" for k, v in results.items())
+    resp = await client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "system", "content": "세 관점을 3문장으로 종합하라."},
+                  {"role": "user", "content": merged}],
+    )
+    print("[Aggregator]\n", resp.choices[0].message.content)
 
 
 if __name__ == "__main__":
     from demo_utils import enable_logging
-    log_path = enable_logging("demo3") 
-        
-    task = "초등학생도 이해할 수 있는 '데이터베이스 인덱스' 설명문 3문장"
-    MAX_ITER = 5          # 무한루프 방지 max iteration 설정
-    feedback = "없음"
-
-    for i in range(1, MAX_ITER + 1):
-        # ── Generator: 이전 피드백을 프롬프트에 주입하여 재생성 ──
-        draft = call(
-            "당신은 작가다. 피드백이 있으면 반드시 반영하라.",
-            f"과제: {task}\n이전 피드백: {feedback}",
-        )
-        print(f"[{i}회차 초안]\n{draft}\n")
-
-        # ── Critic: 첫 단어를 PASS/FAIL로 강제 → 파싱 가능한 종료 신호 확보 ──
-        verdict = call(
-            "당신은 평가자다. 초등학생 눈높이에 맞으면 'PASS', 아니면 'FAIL: <이유 1문장>' 형식으로만 답하라.",
-            draft,
-        )
-        print(f"[{i}회차 평가] {verdict}\n")
-
-        if verdict.strip().startswith("PASS"):   # 종료조건 1: PASS 반환
-            print(f"=> {i}회 만에 수렴")
-            break
-        feedback = verdict                        # FAIL 사유를 다음 반복의 입력으로 전달
-    else:                                         # 종료조건 2: max iteration 도달
-        print("=> 최대 반복 도달, 마지막 초안 채택")
-
+    log_path = enable_logging("demo2")   # 이후 모든 print가 results/에도 저장됨
+    anyio.run(main)   # asyncio.run()과 동일 역할. backend="trio" 지정도 가능
     print(f"\n결과 저장: {log_path}")
