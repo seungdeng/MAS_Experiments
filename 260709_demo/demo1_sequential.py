@@ -1,5 +1,5 @@
 """
-[시연 1] 순차(Sequential) 구조
+순차(Sequential) 구조
 - 핵심: 에이전트 = "역할(시스템 프롬프트) + LLM 호출"일 뿐. 앞 에이전트의 출력이 뒤 에이전트의 입력이 됨.
 - 라이브러리: openai (LLM API 호출용 공식 SDK. pip install openai)
 """
@@ -29,6 +29,10 @@ def agent(role: str, user_input: str) -> str:
 # resp.choices[0].message.content  # 그중 텍스트 본문 (str)
 
 if __name__ == "__main__":
+    from demo_utils import enable_logging
+    log_path = enable_logging("demo1")   # 이 줄 이후 모든 print가 results/에도 저장됨
+    
+    
     topic = "대학원 연구실의 논문 관리 자동화"
 
     # Pipeline
@@ -40,3 +44,5 @@ if __name__ == "__main__":
 
     review = agent("당신은 검토자다. 글의 문제점 2가지만 지적하라.", draft)
     print("[3. Reviewer]\n", review)
+
+    print(f"\n결과 저장: {log_path}")

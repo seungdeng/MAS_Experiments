@@ -1,5 +1,5 @@
 """
-[시연 2] 병렬(Parallel) 구조 — anyio 기반 비동기 처리
+병렬(Parallel) 구조: anyio 기반 비동기 처리
 - 핵심: 서로 의존성 없는 에이전트들은 동시에 호출 → 총 소요시간 = max(개별 시간). 순차 대비 N배 단축.
 - 라이브러리:
     anyio  : asyncio/trio를 통합하는 비동기 실행 라이브러리. task group으로 구조적 동시성 제공 (pip install anyio)
@@ -54,4 +54,7 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
+    from demo_utils import enable_logging
+    log_path = enable_logging("demo2")   # 이후 모든 print가 results/에도 저장됨
     anyio.run(main)   # asyncio.run()과 동일 역할. backend="trio" 지정도 가능
+    print(f"\n결과 저장: {log_path}")

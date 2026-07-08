@@ -1,5 +1,5 @@
 """
-[시연 4] RAG(Retrieval-Augmented Generation) 에이전트
+RAG(Retrieval-Augmented Generation) 에이전트
 - 핵심: LLM이 모르는 사내/연구실 지식을 "벡터 검색으로 찾아 프롬프트에 붙여" 답하게 하는 구조.
   DB 관점 비유: 임베딩 = 인덱싱, 벡터DB = 인덱스가 걸린 테이블, 검색 = kNN 유사도 질의(SELECT ... ORDER BY distance LIMIT k)
 - 라이브러리:
@@ -49,5 +49,10 @@ def rag_agent(question: str) -> str:
 
 
 if __name__ == "__main__":
+    from demo_utils import enable_logging
+    log_path = enable_logging("demo4")   # 이후 모든 print가 results/에도 저장됨
+        
     print("[답변]", rag_agent("연구실 GPU 서버가 있어?"))
     print("[답변]", rag_agent("연구실 회식은 언제야?"))  # 문서에 없음 → '모른다' 유도 (환각 억제 확인용)
+
+    print(f"\n결과 저장: {log_path}")

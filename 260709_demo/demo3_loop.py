@@ -1,5 +1,5 @@
 """
-[시연 3] 루프(Loop) 구조 — Generator-Critic 패턴
+루프(Loop) 구조 — Generator-Critic 패턴
 - 핵심: 생성 → 평가 → (불합격 시) 피드백 반영 재생성. 종료조건 = "합격 판정" or "최대 반복 횟수".
 - 오류 귀인 연구와의 연결점: 루프 구조에서는 '몇 번째 반복의 어느 에이전트가 실패 원인인가'가 문제가 됨.
 - 라이브러리: openai (시연 1과 동일. 루프는 프레임워크 없이 순수 파이썬 while문으로 구현됨을 보여주는 것이 포인트)
@@ -22,6 +22,9 @@ def call(role: str, user_input: str) -> str:
 
 
 if __name__ == "__main__":
+    from demo_utils import enable_logging
+    log_path = enable_logging("demo3") 
+        
     task = "초등학생도 이해할 수 있는 '데이터베이스 인덱스' 설명문 3문장"
     MAX_ITER = 5          # 무한루프 방지 max iteration 설정
     feedback = "없음"
@@ -47,3 +50,5 @@ if __name__ == "__main__":
         feedback = verdict                        # FAIL 사유를 다음 반복의 입력으로 전달
     else:                                         # 종료조건 2: max iteration 도달
         print("=> 최대 반복 도달, 마지막 초안 채택")
+
+    print(f"\n결과 저장: {log_path}")
