@@ -1,16 +1,18 @@
+import argparse
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from config import N_EVAL_USERS, N_FACTORS, N_NEGATIVES, RANDOM_SEED, TOP_K
+from config import FACTOR_METHODS, N_EVAL_USERS, N_FACTORS, N_NEGATIVES, RANDOM_SEED, TOP_K
 from data import build_rating_matrix, leave_one_out_split, load_movielens
-from evaluate import hit_at_k
-from mf import fit_svd, top_items_per_factor, user_residual_summary
+from evaluate import hit_at_k, mrr, ndcg_at_k
+from mf import fit_factorization, top_items_per_factor, user_residual_summary
 from profiling import profile_axis, profile_raw
 from recommend import rank_candidates
 
 
-def main():
+def main(n_factors: int = N_FACTORS, n_eval_users: int = N_EVAL_USERS, out_path: str | None = None):
     rng = np.random.default_rng(RANDOM_SEED)
     ratings, movies = load_movielens()
     train, test = leave_one_out_split(ratings, RANDOM_SEED)
@@ -22,18 +24,20 @@ def main():
     item_idx_inv = {i: m for m, i in item_idx.items()}
 
     R = build_rating_matrix(train, len(user_ids), len(item_ids), user_idx, item_idx)
-    U, S, Vt, user_means, residual = fit_svd(R, N_FACTORS)
 
     title_map = dict(zip(movies.movieId, movies.title))
     genre_map = dict(zip(movies.movieId, movies.genres))
 
-    factor_summaries = top_items_per_factor(Vt, item_idx_inv, n=8)
-    factor_summaries = [
-        [(title_map.get(mid, str(mid)), w) for mid, w in fs] for fs in factor_summaries
-    ]
+    # 방법별로 축/잔차를 미리 계산
+    factorizations = {}
+    for method in FACTOR_METHODS:
+        U, H, residual = fit_factorization(R, n_factors, method=method)
+        summaries = top_items_per_factor(H, item_idx_inv, n=8)
+        summaries = [[(title_map.get(mid, str(mid)), w) for mid, w in fs] for fs in summaries]
+        factorizations[method] = {"residual": residual, "factor_summaries": summaries}
 
     eval_users = rng.choice(
-        test.userId.values, size=min(N_EVAL_USERS, len(test)), replace=False
+        test.userId.values, size=min(n_eval_users, len(test)), replace=False
     )
 
     results = []
@@ -58,28 +62,43 @@ def main():
         candidates += [(m, title_map.get(m, str(m))) for m in negatives]
         rng.shuffle(candidates)
 
-        residual_items = user_residual_summary(residual, u_row, item_ids, movies, n=5)
+        row = {"userId": uid}
 
         p_raw = profile_raw(history)
-        p_axis = profile_axis(history, factor_summaries, residual_items)
-
         ranked_raw = rank_candidates(p_raw, candidates)
-        ranked_axis = rank_candidates(p_axis, candidates)
+        row["profile_raw"] = p_raw
+        row["hit_raw"] = hit_at_k(ranked_raw, target_id, TOP_K)
+        row["mrr_raw"] = mrr(ranked_raw, target_id)
+        row["ndcg_raw"] = ndcg_at_k(ranked_raw, target_id, TOP_K)
 
-        results.append(
-            {
-                "userId": uid,
-                "profile_raw": p_raw,
-                "profile_axis": p_axis,
-                "hit_raw": hit_at_k(ranked_raw, target_id, TOP_K),
-                "hit_axis": hit_at_k(ranked_axis, target_id, TOP_K),
-            }
-        )
+        for method in FACTOR_METHODS:
+            residual = factorizations[method]["residual"]
+            summaries = factorizations[method]["factor_summaries"]
+            residual_items = user_residual_summary(residual, u_row, item_ids, movies, n=5)
+
+            p_axis = profile_axis(history, summaries, residual_items, method=method)
+            ranked_axis = rank_candidates(p_axis, candidates)
+
+            row[f"profile_{method}"] = p_axis
+            row[f"hit_{method}"] = hit_at_k(ranked_axis, target_id, TOP_K)
+            row[f"mrr_{method}"] = mrr(ranked_axis, target_id)
+            row[f"ndcg_{method}"] = ndcg_at_k(ranked_axis, target_id, TOP_K)
+
+        results.append(row)
 
     df = pd.DataFrame(results)
-    df.to_csv("results.csv", index=False)
-    print(df[["hit_raw", "hit_axis"]].mean())
+    df.to_csv(out_path or "results.csv", index=False)
+
+    methods = ["raw"] + FACTOR_METHODS
+    metric_cols = [f"{metric}_{m}" for m in methods for metric in ("hit", "mrr", "ndcg")]
+    print(f"[n_factors={n_factors} n_eval_users={n_eval_users}]")
+    print(df[metric_cols].mean())
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--n-factors", type=int, default=N_FACTORS)
+    parser.add_argument("--n-eval-users", type=int, default=N_EVAL_USERS)
+    parser.add_argument("--out", type=str, default=None, help="output CSV path (default: results.csv)")
+    args = parser.parse_args()
+    main(args.n_factors, args.n_eval_users, args.out)

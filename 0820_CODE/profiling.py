@@ -2,32 +2,38 @@ from llm_client import chat
 
 
 def profile_raw(user_history):
-    """Baseline: 시청 이력만으로 LLM이 직접 프로필 생성 (KAR/ONCE 방식)."""
+    """Baseline: LLM writes a profile directly from watch history alone (KAR/ONCE style)."""
     lines = "\n".join(f"- {t} ({g}) rated {r}/5" for t, g, r in user_history)
     prompt = (
-        "다음은 한 유저가 시청하고 평가한 영화 목록입니다.\n"
+        "Below is a list of movies a user has watched and rated.\n"
         f"{lines}\n\n"
-        "이 정보를 바탕으로 이 유저의 영화 취향을 200자 내외로 서술하세요. "
-        "장르, 톤, 선호 패턴을 구체적으로 언급하세요."
+        "Based on this, describe the user's movie taste in about 200 characters. "
+        "Be specific about genres, tone, and preference patterns."
     )
     return chat([{"role": "user", "content": prompt}])
 
 
-def profile_axis(user_history, factor_summaries, residual_items):
-    """Axis-based: MF로 뽑은 축 + 축이 설명 못 하는 잔차를 조건으로 프로필 생성."""
+def profile_axis(user_history, factor_summaries, residual_items, method: str = "svd"):
+    """Axis-based: profile generated conditioned on matrix-factorization (method) axes + residuals."""
     factors_text = "\n".join(
-        f"축 {i + 1}: 대표 영화 - " + ", ".join(t for t, _ in fs[:5])
+        f"Axis {i + 1}: "
+        + ", ".join(f"{t} ({'+' if w >= 0 else '-'})" for t, w in fs[:5])
         for i, fs in enumerate(factor_summaries)
     )
-    residual_text = "\n".join(f"- {t} (예측 오차 {e})" for t, e in residual_items) or "(없음)"
+    residual_text = "\n".join(
+        f"- {t}: rated {'higher' if e > 0 else 'lower'} than the axes predict ({e:+.2f})"
+        for t, e in residual_items
+    ) or "(none)"
     lines = "\n".join(f"- {t} ({g}) rated {r}/5" for t, g, r in user_history)
     prompt = (
-        "다음은 행렬분해로 추출한 유저 취향의 잠재 축, 이 유저의 시청 이력, "
-        "그리고 기존 축으로 설명이 잘 안 되는(예측 오차가 큰) 영화 목록입니다.\n\n"
-        f"[잠재 축]\n{factors_text}\n\n"
-        f"[시청 이력]\n{lines}\n\n"
-        f"[기존 축으로 설명 안 되는 영화]\n{residual_text}\n\n"
-        "기존 축들이 놓치고 있는 취향의 특성을 짚어내어, "
-        "이 유저의 영화 취향을 200자 내외로 서술하세요."
+        f"Below are the user's latent taste axes extracted via {method.upper()}, "
+        "this user's watch history, and movies that the existing axes fail to explain well.\n\n"
+        "[Latent axes] Each axis is a spectrum: '+' movies define one end, '-' movies the "
+        f"opposite end (e.g. liking one end often means disliking the other).\n{factors_text}\n\n"
+        f"[Watch history]\n{lines}\n\n"
+        "[Movies not explained by existing axes] A positive gap means the user secretly likes "
+        f"it more than these axes suggest; a negative gap means they like it less.\n{residual_text}\n\n"
+        "Point out the taste characteristics that the existing axes are missing, and "
+        "describe the user's movie taste in about 200 characters."
     )
     return chat([{"role": "user", "content": prompt}])
