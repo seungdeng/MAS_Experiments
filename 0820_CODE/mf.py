@@ -62,6 +62,48 @@ def fit_factorization(rating_matrix: np.ndarray, k: int, method: str = "svd"):
     return FACTORIZERS[method](rating_matrix, k)
 
 
+_ENGINEER_OPS = {
+    "+": lambda a, b: a + b,
+    "-": lambda a, b: a - b,
+    "*": lambda a, b: a * b,
+    "/": lambda a, b: np.divide(a, b, out=np.zeros_like(a), where=np.abs(b) > 1e-6),
+}
+
+
+def engineer_axes(U, H, residual, mask, n_rounds: int = 2, ops=("+", "-", "*", "/")):
+    """기존 축들을 사칙연산으로 조합해 residual을 가장 잘 설명하는 새 축을
+    매 라운드 하나씩 찾아 U/H에 편입시키고 residual을 갱신 (matching pursuit)."""
+    U, H, residual = U.copy(), H.copy(), residual.copy()
+    descriptions = []
+    for _ in range(n_rounds):
+        k = H.shape[0]
+        best = None
+        for i in range(k):
+            for j in range(k):
+                if i == j:
+                    continue
+                for op_name in ops:
+                    if op_name in ("+", "*") and j <= i:
+                        continue
+                    cand = _ENGINEER_OPS[op_name](H[i], H[j])
+                    norm = np.linalg.norm(cand)
+                    if norm < 1e-9:
+                        continue
+                    c_hat = cand / norm
+                    new_u = residual @ c_hat
+                    score = float(new_u @ new_u)
+                    if best is None or score > best[0]:
+                        best = (score, new_u, c_hat, f"Axis{i + 1} {op_name} Axis{j + 1}")
+        if best is None:
+            break
+        _, new_u, c_hat, desc = best
+        U = np.hstack([U, new_u[:, None]])
+        H = np.vstack([H, c_hat[None, :]])
+        residual = mask * (residual - np.outer(new_u, c_hat))
+        descriptions.append(desc)
+    return U, H, residual, descriptions
+
+
 def top_items_per_factor(H: np.ndarray, item_idx_inv: dict, n: int = 8):
     """각 축(factor)에서 loading 절댓값이 큰 상위 아이템."""
     factors = []
@@ -71,14 +113,17 @@ def top_items_per_factor(H: np.ndarray, item_idx_inv: dict, n: int = 8):
     return factors
 
 
-def user_residual_summary(residual, user_row, item_ids, movies_df, n=5):
-    """해당 유저에서 기존 축으로 설명이 잘 안 되는(잔차 절댓값이 큰) 영화 n개."""
+def user_residual_summary(residual, user_row, item_ids, movies_df, mask, n=5, mode="far"):
+    """해당 유저가 실제로 평가한 영화 중 기존 축과의 잔차 기준 상위 n개.
+    mode="far": 절댓값이 큰(기존 축이 설명 못 하는) 영화, mode="close": 절댓값이 작은(기존 축이 잘 설명하는) 영화."""
     row = residual[user_row]
-    idx = np.argsort(-np.abs(row))[:n]
+    observed = np.where(mask[user_row])[0]
+    if len(observed) == 0:
+        return []
+    order = np.argsort(-np.abs(row[observed]) if mode == "far" else np.abs(row[observed]))
+    idx = observed[order][:n]
     out = []
     for i in idx:
-        if row[i] == 0:
-            continue
         mid = item_ids[i]
         title = movies_df.loc[movies_df.movieId == mid, "title"].values
         if len(title):

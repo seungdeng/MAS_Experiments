@@ -4,10 +4,18 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from config import FACTOR_METHODS, N_EVAL_USERS, N_FACTORS, N_NEGATIVES, RANDOM_SEED, TOP_K
+from config import (
+    FACTOR_METHODS,
+    N_ENGINEERED_AXES,
+    N_EVAL_USERS,
+    N_FACTORS,
+    N_NEGATIVES,
+    RANDOM_SEED,
+    TOP_K,
+)
 from data import build_rating_matrix, leave_one_out_split, load_movielens
 from evaluate import hit_at_k, mrr, ndcg_at_k
-from mf import fit_factorization, top_items_per_factor, user_residual_summary
+from mf import engineer_axes, fit_factorization, top_items_per_factor, user_residual_summary
 from profiling import profile_axis, profile_raw
 from recommend import rank_candidates
 
@@ -24,6 +32,7 @@ def main(n_factors: int = N_FACTORS, n_eval_users: int = N_EVAL_USERS, out_path:
     item_idx_inv = {i: m for m, i in item_idx.items()}
 
     R = build_rating_matrix(train, len(user_ids), len(item_ids), user_idx, item_idx)
+    mask = R != 0
 
     title_map = dict(zip(movies.movieId, movies.title))
     genre_map = dict(zip(movies.movieId, movies.genres))
@@ -32,6 +41,8 @@ def main(n_factors: int = N_FACTORS, n_eval_users: int = N_EVAL_USERS, out_path:
     factorizations = {}
     for method in FACTOR_METHODS:
         U, H, residual = fit_factorization(R, n_factors, method=method)
+        U, H, residual, engineered_desc = engineer_axes(U, H, residual, mask, n_rounds=N_ENGINEERED_AXES)
+        print(f"[{method}] engineered axes: {engineered_desc}")
         summaries = top_items_per_factor(H, item_idx_inv, n=8)
         summaries = [[(title_map.get(mid, str(mid)), w) for mid, w in fs] for fs in summaries]
         factorizations[method] = {"residual": residual, "factor_summaries": summaries}
@@ -74,9 +85,10 @@ def main(n_factors: int = N_FACTORS, n_eval_users: int = N_EVAL_USERS, out_path:
         for method in FACTOR_METHODS:
             residual = factorizations[method]["residual"]
             summaries = factorizations[method]["factor_summaries"]
-            residual_items = user_residual_summary(residual, u_row, item_ids, movies, n=5)
+            far_items = user_residual_summary(residual, u_row, item_ids, movies, mask, n=5, mode="far")
+            close_items = user_residual_summary(residual, u_row, item_ids, movies, mask, n=5, mode="close")
 
-            p_axis = profile_axis(history, summaries, residual_items, method=method)
+            p_axis = profile_axis(history, summaries, far_items, close_items, method=method)
             ranked_axis = rank_candidates(p_axis, candidates)
 
             row[f"profile_{method}"] = p_axis
