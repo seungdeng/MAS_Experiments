@@ -13,11 +13,14 @@ def profile_raw(user_history):
     return chat([{"role": "user", "content": prompt}])
 
 
-def profile_axis(user_history, factor_summaries, far_items, close_items, method: str = "svd"):
+def profile_axis(
+    user_history, factor_summaries, far_items, close_items, method: str = "svd", axis_labels=None
+):
     """Axis-based: profile generated conditioned on matrix-factorization (method) axes, plus
-    movies the axes already explain well (close) contrasted with ones they don't (far)."""
+    movies the axes already explain well (close) contrasted with ones they don't (far).
+    axis_labels lets interpretable axes (e.g. genre names) be shown by name instead of "Axis N"."""
     factors_text = "\n".join(
-        f"Axis {i + 1}: "
+        f"{axis_labels[i] if axis_labels else f'Axis {i + 1}'}: "
         + ", ".join(f"{t} ({'+' if w >= 0 else '-'})" for t, w in fs[:5])
         for i, fs in enumerate(factor_summaries)
     )
