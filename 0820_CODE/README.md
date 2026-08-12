@@ -3,7 +3,7 @@
 LLM이 유저의 영화 취향 프로필을 생성할 때, **시청 이력만 주는 것**과 **축(행렬분해로 압축한 잠재축) + 그 축이 잘 반영하는(close) 영화와 못 하는(far) 영화를 대비시켜 함께 주는 것** 중 어느 쪽이 더 정확한 추천으로 이어지는지 Hit@K/MRR/NDCG@K로 비교하는 실험 코드입니다.
 
 ## 동작 방식 (파이프라인)
-1. **데이터 로딩 & 분할** (`data.py`) — MovieLens `ratings.csv`/`movies.csv`를 읽고, 유저별 가장 최근 평점 1개를 leave-one-out test로 분리, 나머지를 train으로 사용.
+1. **데이터 로딩 & 필터링 & 분할** (`data.py`) — MovieLens `ratings.csv`/`movies.csv`를 읽고, `filter_users_by_history`로 이력 길이(전체 평점 수)가 `[MIN_HISTORY_LEN, MAX_HISTORY_LEN]`(CLI `--min-history-len`/`--max-history-len`, 기본 300~상한없음) 구간 밖인 유저를 제외한 뒤, 남은 유저 중 `MAX_POOL_USERS`(기본 1500)명만 무작위로 샘플링(`RANDOM_SEED` 고정)해 실제 행렬 계산에 쓸 풀을 만듦. 조건을 만족하는 유저 전체(`ml-latest` 기준 ≥300 이력 유저만 해도 26,610명)를 다 넣으면 이들이 합쳐서 본 영화가 카탈로그 대부분(8만+ 편)을 덮어 dense 평점 행렬이 감당 못 할 크기(수십 GB)가 되므로, 풀을 좁혀 유저/아이템 universe를 함께 줄인다. 이 구간 필터는 "이력이 매우 긴 유저(예: ≥300)만" 볼 때뿐 아니라, "이력이 짧은 유저(예: 20~50)만" 뽑아 raw-vs-axis 격차가 이력 길이에 따라 어떻게 달라지는지 비교하는 데도 씀(`history_len` 컬럼으로 결과에 유저별 이력 길이가 함께 저장됨). 이후 유저별 가장 최근 평점 1개를 leave-one-out test로 분리, 나머지를 train으로 사용.
 2. **축 계산 + 엔지니어링** (`mf.py`) — train 평점 행렬을 `config.FACTOR_METHODS`에 지정된 기법별로 분해해 잠재 축(U, H)과 잔차를 계산. 어느 기법이든 **축(axis)은 입력 feature 그 자체가 아니라, feature를 압축(압축률 = `N_FACTORS`)해서 나온 결과**라는 원칙은 동일함:
    - `svd`/`nmf`/`fa`: 입력 feature = 유저×영화 평점 행렬. 이걸 그대로 압축해 `N_FACTORS`개의 **추상적인** 잠재 축을 얻음 (사람이 정의 X, "Axis1/Axis2/..."로 표시)
    - `genre`: 입력 feature = 유저×장르 평균평점 행렬(영화-장르 멤버십 `data.build_item_genre_matrix`로 가중 집계, 안 본 장르는 유저 평균 기준 0=중립 처리 — 실제 0점으로 오해되지 않게). 이 장르 feature 행렬을 **SVD로 다시 압축**해 `N_FACTORS`개의 축을 얻음(`fit_genre`) — 장르 하나하나가 축이 되는 게 아니라, 여러 장르의 선형결합("Action(+)+Drama(-)" 식)이 압축된 축이 됨. 대표영화/잔차 계산을 위해 이 압축 축을 다시 아이템 공간으로 투영
@@ -23,11 +23,13 @@ LLM 호출은 `llm_client.py`를 통해 OpenRouter Chat Completions API(`config.
 ## 준비
 ```bash
 pip install -r requirements.txt
-set OPENROUTER_API_KEY=sk-or-...
+set OPENROUTER_API_KEY=sk-or-v1-...
 ```
 
-`ml-latest-small` 데이터를 https://files.grouplens.org/datasets/movielens/ml-latest-small.zip
-에서 받아 `data/ml-latest-small/` 에 압축 해제 (ratings.csv, movies.csv 필요).
+`ml-latest`(전체) 데이터를 https://files.grouplens.org/datasets/movielens/ml-latest.zip
+에서 받아 `data/ml-latest/` 에 압축 해제 (ratings.csv, movies.csv 필요; zip 335MB, 압축 해제 시 ratings.csv만 933MB — 유저 33만/평점 3383만). `data/`는 `.gitignore`에 포함되어 있어 커밋되지 않음.
+
+작은 데이터셋(`ml-latest-small`, 610명/10만 평점)으로 빠르게 돌리고 싶으면 https://files.grouplens.org/datasets/movielens/ml-latest-small.zip 을 받아 `data/ml-latest-small/`에 풀고 `config.DATA_DIR`을 바꾸면 됨(단, 이 경우 유저 수가 적어 `MIN_HISTORY_LEN`을 낮춰야 함 — ≥300 기준 84명뿐).
 
 ## 실행
 ```bash
@@ -36,26 +38,32 @@ python main.py
 python main.py --n-factors 5 --out results_nf5.csv
 python main.py --n-factors 8 --out results_nf8.csv
 # 평가 유저 수 오버라이드
-python main.py --n-eval-users 150
+python main.py --n-eval-users 300
+# 짧은 이력 vs 긴 이력 유저 비교 (같은 N_FACTORS/N_EVAL_USERS로 두 그룹 각각 실행)
+python main.py --min-history-len 20 --max-history-len 50 --n-eval-users 300 --out results_light.csv
+python main.py --min-history-len 300 --n-eval-users 300 --out results_heavy.csv
 ```
-`--n-factors`/`--n-eval-users`/`--out`은 `config.py`의 `N_FACTORS`/`N_EVAL_USERS`/`results.csv`를 일시적으로 덮어씁니다(파일은 그대로 둠).
+`--n-factors`/`--n-eval-users`/`--out`/`--min-history-len`/`--max-history-len`은 `config.py`의 `N_FACTORS`/`N_EVAL_USERS`/`results.csv`/`MIN_HISTORY_LEN`/(상한 없음)을 일시적으로 덮어씁니다(파일은 그대로 둠). 두 그룹을 비교할 땐 결과 CSV의 `history_len` 컬럼으로 유저별 실제 이력 길이도 확인 가능.
 
 `config.py`에서 조정 가능한 값:
 - `FACTOR_METHODS`: 비교할 축 추출 기법 목록 (svd/nmf/fa/genre 중 선택, `mf.FACTORIZERS`에 정의). 네 기법 모두 `N_FACTORS`를 그대로 압축 축 개수로 씀(genre도 예외 아님 — 19개 장르 feature를 SVD로 `N_FACTORS`개로 압축)
 - `N_FACTORS`: 기본 잠재 축 개수 (CLI `--n-factors`로 실행 시 오버라이드 가능)
 - `MAX_ENGINEERED_AXES`: 축 엔지니어링 라운드 상한(안전장치, 기본 10) — 실제 추가 개수는 `MIN_AXIS_GAIN` 조건으로 그 전에 조기 종료되는 경우가 대부분
 - `MIN_AXIS_GAIN`: 이번 라운드 최선 조합의 잔차 감소율이 이 값(기본 0.01=1%) 미만이면 축 추가 중단
+- `MIN_HISTORY_LEN`: 이 값(기본 300) 미만으로 평점을 남긴 유저는 평가 대상에서 제외 (CLI `--min-history-len`으로 오버라이드 가능)
+- `MAX_HISTORY_LEN`: config 기본값은 없음(상한 없음); 짧은 이력 유저만 뽑고 싶을 때 CLI `--max-history-len`으로만 지정
+- `MAX_POOL_USERS`: 이력 길이 조건을 만족하는 유저 중 행렬 계산에 실제로 쓸 유저 수 상한(기본 1500) — dense 행렬 크기를 제어하기 위한 값이라 `N_EVAL_USERS`보다는 넉넉히 커야 함
 - `N_NEGATIVES`: 랭킹 후보에 섞을 negative 샘플 수
-- `N_EVAL_USERS`: 평가할 유저 수 (기본 150, CLI `--n-eval-users`로 오버라이드 가능)
+- `N_EVAL_USERS`: 평가할 유저 수 (기본 150, CLI `--n-eval-users`로 오버라이드 가능; `MAX_POOL_USERS`를 넘을 수 없음)
 - `TOP_K`: Hit@K, NDCG@K의 K
 - `RANDOM_SEED`: 재현성용 시드
 - `MODEL`: 사용할 LLM (OpenRouter 모델 ID)
 
-실행 결과는 `results.csv`에 유저별 프로필 텍스트(`profile_raw`, `profile_svd`, `profile_nmf`, `profile_fa`, `profile_genre` 등 `FACTOR_METHODS`에 따라 결정)와 방법별 hit/mrr/ndcg 값으로 저장되며, 콘솔에는 방법별 평균 Hit@K/MRR/NDCG@K가 출력됩니다. 실행 시작 시 방법별로 `[svd] engineered axes: ['E1 = Axis1 + Axis3']`처럼 실제로 몇 개가, 어떤 조합으로 추가됐는지 로그로 출력됩니다.
+실행 결과는 `results.csv`에 유저별 `history_len`(실제 이력 길이), 프로필 텍스트(`profile_raw`, `profile_svd`, `profile_nmf`, `profile_fa`, `profile_genre` 등 `FACTOR_METHODS`에 따라 결정), 방법별 hit/mrr/ndcg 값으로 저장되며, 콘솔에는 방법별 평균 Hit@K/MRR/NDCG@K가 출력됩니다. 실행 시작 시 방법별로 `[svd] engineered axes: ['E1 = Axis1 + Axis3']`처럼 실제로 몇 개가, 어떤 조합으로 추가됐는지 로그로 출력됩니다.
 
 ## 구조
 - `config.py`: API 키/모델, 데이터 경로, 실험 하이퍼파라미터
-- `data.py`: MovieLens 로딩, leave-one-out split, 평점 행렬 생성, 아이템×장르 멤버십 행렬 생성(`build_item_genre_matrix`)
+- `data.py`: MovieLens 로딩, 이력 길이 구간 필터링+풀 샘플링(`filter_users_by_history`), leave-one-out split, 평점 행렬 생성, 아이템×장르 멤버십 행렬 생성(`build_item_genre_matrix`)
 - `mf.py`: SVD/NMF/FA/genre 네 가지 축 추출 기법(config.FACTOR_METHODS 에서 선택 — genre는 유저×장르 평균평점 feature를 SVD로 `N_FACTORS`개 축으로 압축), 기존 축을 사칙연산으로 조합해 잔차를 더 잘 설명하는 축을 잔차 감소율이 임계치 밑으로 떨어질 때까지 반복 추가하는 `engineer_axes`(matching pursuit, 중복 조합 재선택 방지, 라벨 길이 폭발 방지), 축별 대표 아이템, 유저별 잔차 기반 close/far 아이템 추출
 - `profiling.py`: profile_raw(이력만) / profile_axis(축 + close/far 대비 조건) 두 프로필 생성 방식
 - `llm_client.py`: OpenRouter Chat Completions 호출 래퍼

@@ -33,16 +33,19 @@ def profile_axis(
     ) or "(none)"
     lines = "\n".join(f"- {t} ({g}) rated {r}/5" for t, g, r in user_history)
     prompt = (
-        f"Below are the user's latent taste axes extracted via {method.upper()}, "
-        "this user's watch history, and how well those axes explain specific movies the user rated.\n\n"
+        f"Below are the user's watch history, latent taste axes extracted via {method.upper()}, "
+        "and how well those axes explain specific movies the user rated.\n\n"
+        f"[Watch history]\n{lines}\n\n"
         "[Latent axes] Each axis is a spectrum: '+' movies define one end, '-' movies the "
         f"opposite end (e.g. liking one end often means disliking the other).\n{factors_text}\n\n"
-        f"[Watch history]\n{lines}\n\n"
         f"[Well explained by existing axes]\n{close_text}\n\n"
         "[Not well explained by existing axes] A positive gap means the user secretly likes "
         f"it more than these axes suggest; a negative gap means they like it less.\n{far_text}\n\n"
-        "Using the contrast between what the axes already capture and what they miss, "
-        "point out the taste characteristics the existing axes are missing, and "
-        "describe the user's movie taste in about 200 characters."
+        "Based primarily on the watch history, describe the user's movie taste in about 200 "
+        "characters. Be specific about genres, tone, and preference patterns, and cover the "
+        "full range of genres they've actually watched -- do not narrow down to only one or "
+        "two genres. Use the latent axes and the well/not-well-explained contrast only as extra "
+        "nuance (e.g. a subtle preference the axes reveal), not to claim the user dislikes a "
+        "genre unless the watch history itself clearly shows low ratings for it."
     )
     return chat([{"role": "user", "content": prompt}])
