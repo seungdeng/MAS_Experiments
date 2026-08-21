@@ -12,8 +12,7 @@ MAX_POOL_USERS = 1500  # heavy user 중 행렬 계산에 실제로 쓸 유저 �
 
 FACTOR_METHODS = ["svd", "nmf", "fa", "genre"]  # mf.FACTORIZERS 중 비교할 것들
 N_FACTORS = 3
-MAX_ENGINEERED_AXES = 10  # 축 엔지니어링 라운드 상한(안전장치) -- 보통은 MIN_AXIS_GAIN 조건으로 더 일찍 멈춤
-MIN_AXIS_GAIN = 0.01  # 이번 라운드 최선 조합의 잔차 감소율이 이 값 미만이면 축 추가 중단
+MAX_ENGINEERED_AXES = 10  # 축 엔지니어링 라운드 상한(안전장치) -- 언제 멈출지는 LLM이 CONTINUE/STOP으로 결정하며, 이 값은 LLM이 계속 CONTINUE를 골라도 과다 라운드/API 비용으로 새지 않게 막는 안전망
 N_NEGATIVES = 19
 TOP_K = 5
 N_EVAL_USERS = 150  # Inference User N

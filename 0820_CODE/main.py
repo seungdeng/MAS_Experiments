@@ -4,11 +4,11 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from axis_engineering import engineer_axes_llm
 from config import (
     FACTOR_METHODS,
     MAX_ENGINEERED_AXES,
     MAX_POOL_USERS,
-    MIN_AXIS_GAIN,
     MIN_HISTORY_LEN,
     N_EVAL_USERS,
     N_FACTORS,
@@ -24,7 +24,7 @@ from data import (
     load_movielens,
 )
 from evaluate import hit_at_k, mrr, ndcg_at_k
-from mf import engineer_axes, fit_factorization, top_items_per_factor, user_residual_summary
+from mf import top_items_per_factor, user_residual_summary
 from profiling import profile_axis, profile_raw
 from recommend import rank_candidates
 
@@ -60,33 +60,25 @@ def main(
     genre_map = dict(zip(movies.movieId, movies.genres))
     item_genre_matrix, genre_names = build_item_genre_matrix(movies, item_ids)
 
-    genre_idx_inv = {i: g for i, g in enumerate(genre_names)}
-
-    # 방법별로 축/잔차를 미리 계산
+    # 방법별로 축/잔차를 미리 계산 (LLM 기반 feature 엔지니어링 포함)
     factorizations = {}
     for method in FACTOR_METHODS:
-        if method == "genre":
-            U, H, residual, H_genre = fit_factorization(
-                R, n_factors, method=method, item_genre_matrix=item_genre_matrix
-            )
-            # 압축된 축이 어떤 장르 조합인지: "Action(+)+Drama(-)" 같은 라벨로 표시
-            genre_summaries = top_items_per_factor(H_genre, genre_idx_inv, n=3)
-            axis_labels = [
-                "+".join(f"{g}({'+' if w >= 0 else '-'})" for g, w in gs) for gs in genre_summaries
-            ]
-        else:
-            U, H, residual = fit_factorization(R, n_factors, method=method)
-            axis_labels = None
-        U, H, residual, engineered_desc, axis_labels = engineer_axes(
-            U,
-            H,
-            residual,
-            mask,
-            max_rounds=MAX_ENGINEERED_AXES,
-            min_relative_gain=MIN_AXIS_GAIN,
-            axis_labels=axis_labels,
+        genre_kwargs = (
+            {"item_genre_matrix": item_genre_matrix, "genre_names": genre_names}
+            if method == "genre"
+            else {}
         )
-        print(f"[{method}] engineered axes: {engineered_desc}")
+        U, H, residual, engineered_desc, axis_labels = engineer_axes_llm(
+            R,
+            n_factors,
+            mask,
+            method,
+            item_idx_inv,
+            title_map,
+            max_rounds=MAX_ENGINEERED_AXES,
+            **genre_kwargs,
+        )
+        print(f"[{method}] engineered features: {engineered_desc}")
         summaries = top_items_per_factor(H, item_idx_inv, n=8)
         summaries = [[(title_map.get(mid, str(mid)), w) for mid, w in fs] for fs in summaries]
         factorizations[method] = {

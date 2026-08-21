@@ -4,13 +4,17 @@ LLM이 유저의 영화 취향 프로필을 생성할 때, **시청 이력만 �
 
 ## 동작 방식 (파이프라인)
 1. **데이터 로딩 & 필터링 & 분할** (`data.py`) — MovieLens `ratings.csv`/`movies.csv`를 읽고, `filter_users_by_history`로 이력 길이(전체 평점 수)가 `[MIN_HISTORY_LEN, MAX_HISTORY_LEN]`(CLI `--min-history-len`/`--max-history-len`, 기본 300~상한없음) 구간 밖인 유저를 제외한 뒤, 남은 유저 중 `MAX_POOL_USERS`(기본 1500)명만 무작위로 샘플링(`RANDOM_SEED` 고정)해 실제 행렬 계산에 쓸 풀을 만듦. 조건을 만족하는 유저 전체(`ml-latest` 기준 ≥300 이력 유저만 해도 26,610명)를 다 넣으면 이들이 합쳐서 본 영화가 카탈로그 대부분(8만+ 편)을 덮어 dense 평점 행렬이 감당 못 할 크기(수십 GB)가 되므로, 풀을 좁혀 유저/아이템 universe를 함께 줄인다. 이 구간 필터는 "이력이 매우 긴 유저(예: ≥300)만" 볼 때뿐 아니라, "이력이 짧은 유저(예: 20~50)만" 뽑아 raw-vs-axis 격차가 이력 길이에 따라 어떻게 달라지는지 비교하는 데도 씀(`history_len` 컬럼으로 결과에 유저별 이력 길이가 함께 저장됨). 이후 유저별 가장 최근 평점 1개를 leave-one-out test로 분리, 나머지를 train으로 사용.
-2. **축 계산 + 엔지니어링** (`mf.py`) — train 평점 행렬을 `config.FACTOR_METHODS`에 지정된 기법별로 분해해 잠재 축(U, H)과 잔차를 계산. 어느 기법이든 **축(axis)은 입력 feature 그 자체가 아니라, feature를 압축(압축률 = `N_FACTORS`)해서 나온 결과**라는 원칙은 동일함:
-   - `svd`/`nmf`/`fa`: 입력 feature = 유저×영화 평점 행렬. 이걸 그대로 압축해 `N_FACTORS`개의 **추상적인** 잠재 축을 얻음 (사람이 정의 X, "Axis1/Axis2/..."로 표시)
-   - `genre`: 입력 feature = 유저×장르 평균평점 행렬(영화-장르 멤버십 `data.build_item_genre_matrix`로 가중 집계, 안 본 장르는 유저 평균 기준 0=중립 처리 — 실제 0점으로 오해되지 않게). 이 장르 feature 행렬을 **SVD로 다시 압축**해 `N_FACTORS`개의 축을 얻음(`fit_genre`) — 장르 하나하나가 축이 되는 게 아니라, 여러 장르의 선형결합("Action(+)+Drama(-)" 식)이 압축된 축이 됨. 대표영화/잔차 계산을 위해 이 압축 축을 다시 아이템 공간으로 투영
+2. **축 계산 + feature 엔지니어링** (`mf.py`, `axis_engineering.py`) — 어느 기법이든 **축(axis)은 입력 feature 그 자체가 아니라, feature 행렬을 압축(압축률 = `N_FACTORS`)해서 나온 결과**라는 원칙이 항상 유지됨. 새로 만들어내는 정보도 예외가 아니라 반드시 "feature로 추가 → 전체를 다시 압축"을 거친다(축끼리 직접 조합해서 압축 없이 축 목록에 얹지 않음):
+   - **base feature**: `svd`/`nmf`/`fa`는 유저×영화 평점 행렬 자체, `genre`는 유저×장르 평균평점 행렬(영화-장르 멤버십 `data.build_item_genre_matrix`로 가중 집계, 안 본 장르는 유저 평균 기준 0=중립 처리)이 각 방법의 feature. `fit_svd`/`fit_nmf`/`fit_factor_analysis`/`fit_genre`가 이 feature를 `N_FACTORS`개 축으로 압축
+   - **`axis_engineering.engineer_axes_llm()`**: 매 라운드 LLM에게 "지금 축들이 전체 유저 기준으로 가장 못 설명하는 영화들"(`_global_far_items`)과 현재 축 요약을 보여주고, **어떤 두 base feature를 어떤 연산(+,-,×,÷)으로 조합할지, 그리고 몇 라운드나 계속할지(CONTINUE/STOP)를 모두 LLM이 결정**함:
+     - `genre`: 19개 장르 이름 전체를 후보로 보여주고 `"Action - Romance"`처럼 이름으로 자유 제안받음
+     - `svd`/`nmf`/`fa`: 영화가 수천~수만 개라 이름 그대로는 후보로 보여줄 수 없어, far 영화 상위 10개로 후보를 좁히고 번호를 매겨 `"3 - 7"`처럼 번호로 응답받음(`recommend.py`의 번호 기반 랭킹과 동일한 패턴)
+   - 서버가 제안을 검증 — 존재하지 않는 이름/번호나 허용 안 된 연산자를 쓰면 **그 즉시 조용히 중단**(재시도 없음, fail-safe). 방법에 따라 엔지니어링 feature가 0개일 수 있음(버그 아니라 의도된 동작)
+   - 유효한 제안이면 그 두 feature의 컬럼을 실제로 사칙연산해서 **새 feature 컬럼 하나**를 만들고, 이걸 원본 feature 행렬에 이어붙여서 **그 방법으로 처음부터 다시 압축**(재적합). 압축 결과에서 새로 추가한 컬럼에 해당하는 부분은 버리고 원본 feature(영화/장르) 부분만 축으로 남기므로, 축 개수는 항상 `N_FACTORS`로 고정되고 새 feature의 영향은 압축 자체에 반영됨
+   - 재적합으로 잔차가 얼마나 줄었는지(음수면 오히려 나빠졌다는 뜻 — LLM이 도움 안 되는 조합을 제안했을 수 있음)를 LLM에게 알려주고 "더 추가할지" 물어봄(`_ask_continue`). 같은 조합을 다시 제안하면(레퍼토리 소진으로 보고) 자동 중단
+   - `MAX_ENGINEERED_AXES`(기본 10)는 LLM이 계속 CONTINUE를 골라도 라운드가 무한정 늘지 않게 막는 안전 상한. 매 라운드 해당 방법을 처음부터 재학습하므로(특히 `nmf`는 반복최적화라 상대적으로 느림) 라운드가 많아지면 실행 시간이 늘어날 수 있음
 
-   이어서 `engineer_axes()`가 이렇게 얻은 축들을 **사칙연산(+, -, ×, ÷)으로 조합**한 후보를 모두 만들어보고, 현재 잔차를 가장 많이 설명하는(=잔차에 가장 크게 투영되는) 조합을 매 라운드 하나씩 찾아 축 집합에 편입시키고 잔차를 갱신 — matching pursuit 방식. 몇 개를 추가할지 미리 정해두지 않고, **이번 라운드 최선 조합의 잔차 감소율이 `MIN_AXIS_GAIN`(기본 1%) 미만이면 자동으로 멈춘다**(더 추가해도 의미 있는 정보가 없다고 판단). `MAX_ENGINEERED_AXES`(기본 10)는 무한 반복을 막는 안전장치일 뿐, 실제로는 그 전에 조기 종료되는 경우가 대부분(예: svd/fa는 보통 1라운드, genre는 이미 SVD로 압축된 축이라 더 줄일 게 없어 0라운드, nmf는 초기 적합이 상대적으로 나빠 10라운드까지 채우기도 함). 이미 선택된 조합은 재선택하지 않고, 새로 추가된 축에는 `E1`, `E2`... 같은 짧은 이름을 붙여 다음 라운드 조합 재료로 씀(조합식 텍스트를 그대로 라벨로 재사용하면 라운드가 거듭될수록 라벨이 기하급수적으로 길어지는 문제가 있어 방지). `genre` 방법의 경우 기본 축 라벨은 장르 조합("Action(+)+Drama(-)")으로 표시됨(`axis_labels`).
-
-   이렇게 만들어진 축(기본 축 + 엔지니어링 축)에서 대표 영화(loading 상위 n개)를 추출하고, `user_residual_summary(mode=...)`로 유저가 평가한 영화 중 잔차 절댓값이 **작은(close, 축들이 잘 설명하는)** 영화와 **큰(far, 축들이 설명 못 하는)** 영화를 각각 상위 n개씩 뽑음.
+   이렇게 압축된 축에서 대표 영화(loading 상위 n개)를 추출하고, `user_residual_summary(mode=...)`로 유저가 평가한 영화 중 잔차 절댓값이 **작은(close, 축들이 잘 설명하는)** 영화와 **큰(far, 축들이 설명 못 하는)** 영화를 각각 상위 n개씩 뽑음.
 3. **프로필 생성** (`profiling.py`, LLM 호출) — 평가 대상 유저마다 두 방식으로 취향 프로필 텍스트를 생성:
    - `profile_raw`: 시청 이력만 보고 LLM이 직접 서술 (baseline, KAR/ONCE 방식)
    - `profile_axis`: 잠재 축 요약(+/- 부호로 축의 두 방향 표시, `genre` 방법은 축 라벨이 그 축을 구성하는 장르 조합) + 시청 이력 + **close 영화(축이 잘 반영하는 취향)**와 **far 영화(축이 반영 못 하는 취향)**를 함께 주고, 그 대비를 근거로 기존 축이 놓친 취향을 짚어내도록 서술 — `FACTOR_METHODS`의 기법마다 하나씩 생성
@@ -48,8 +52,7 @@ python main.py --min-history-len 300 --n-eval-users 300 --out results_heavy.csv
 `config.py`에서 조정 가능한 값:
 - `FACTOR_METHODS`: 비교할 축 추출 기법 목록 (svd/nmf/fa/genre 중 선택, `mf.FACTORIZERS`에 정의). 네 기법 모두 `N_FACTORS`를 그대로 압축 축 개수로 씀(genre도 예외 아님 — 19개 장르 feature를 SVD로 `N_FACTORS`개로 압축)
 - `N_FACTORS`: 기본 잠재 축 개수 (CLI `--n-factors`로 실행 시 오버라이드 가능)
-- `MAX_ENGINEERED_AXES`: 축 엔지니어링 라운드 상한(안전장치, 기본 10) — 실제 추가 개수는 `MIN_AXIS_GAIN` 조건으로 그 전에 조기 종료되는 경우가 대부분
-- `MIN_AXIS_GAIN`: 이번 라운드 최선 조합의 잔차 감소율이 이 값(기본 0.01=1%) 미만이면 축 추가 중단
+- `MAX_ENGINEERED_AXES`: 축 엔지니어링 라운드 상한(안전장치, 기본 10) — 실제로 몇 개가 추가될지는 LLM이 CONTINUE/STOP으로 결정하며, 이 값은 LLM이 계속 CONTINUE를 골라도 과다 라운드로 새지 않게 막는 안전망
 - `MIN_HISTORY_LEN`: 이 값(기본 300) 미만으로 평점을 남긴 유저는 평가 대상에서 제외 (CLI `--min-history-len`으로 오버라이드 가능)
 - `MAX_HISTORY_LEN`: config 기본값은 없음(상한 없음); 짧은 이력 유저만 뽑고 싶을 때 CLI `--max-history-len`으로만 지정
 - `MAX_POOL_USERS`: 이력 길이 조건을 만족하는 유저 중 행렬 계산에 실제로 쓸 유저 수 상한(기본 1500) — dense 행렬 크기를 제어하기 위한 값이라 `N_EVAL_USERS`보다는 넉넉히 커야 함
@@ -59,12 +62,13 @@ python main.py --min-history-len 300 --n-eval-users 300 --out results_heavy.csv
 - `RANDOM_SEED`: 재현성용 시드
 - `MODEL`: 사용할 LLM (OpenRouter 모델 ID)
 
-실행 결과는 `results.csv`에 유저별 `history_len`(실제 이력 길이), 프로필 텍스트(`profile_raw`, `profile_svd`, `profile_nmf`, `profile_fa`, `profile_genre` 등 `FACTOR_METHODS`에 따라 결정), 방법별 hit/mrr/ndcg 값으로 저장되며, 콘솔에는 방법별 평균 Hit@K/MRR/NDCG@K가 출력됩니다. 실행 시작 시 방법별로 `[svd] engineered axes: ['E1 = Axis1 + Axis3']`처럼 실제로 몇 개가, 어떤 조합으로 추가됐는지 로그로 출력됩니다.
+실행 결과는 `results.csv`에 유저별 `history_len`(실제 이력 길이), 프로필 텍스트(`profile_raw`, `profile_svd`, `profile_nmf`, `profile_fa`, `profile_genre` 등 `FACTOR_METHODS`에 따라 결정), 방법별 hit/mrr/ndcg 값으로 저장되며, 콘솔에는 방법별 평균 Hit@K/MRR/NDCG@K가 출력됩니다. 실행 시작 시 방법별로 `[svd] engineered features: ['Movie A - Movie B (residual -3.2%)']`처럼 LLM이 실제로 제안해 채택된 feature 조합이 로그로 출력됩니다.
 
 ## 구조
 - `config.py`: API 키/모델, 데이터 경로, 실험 하이퍼파라미터
 - `data.py`: MovieLens 로딩, 이력 길이 구간 필터링+풀 샘플링(`filter_users_by_history`), leave-one-out split, 평점 행렬 생성, 아이템×장르 멤버십 행렬 생성(`build_item_genre_matrix`)
-- `mf.py`: SVD/NMF/FA/genre 네 가지 축 추출 기법(config.FACTOR_METHODS 에서 선택 — genre는 유저×장르 평균평점 feature를 SVD로 `N_FACTORS`개 축으로 압축), 기존 축을 사칙연산으로 조합해 잔차를 더 잘 설명하는 축을 잔차 감소율이 임계치 밑으로 떨어질 때까지 반복 추가하는 `engineer_axes`(matching pursuit, 중복 조합 재선택 방지, 라벨 길이 폭발 방지), 축별 대표 아이템, 유저별 잔차 기반 close/far 아이템 추출
+- `mf.py`: SVD/NMF/FA/genre 네 가지 축 추출 기법(config.FACTOR_METHODS 에서 선택 — genre는 유저×장르 평균평점 feature를 SVD로 `N_FACTORS`개 축으로 압축). 각 `fit_*`는 `extra_features`(LLM이 엔지니어링한 feature 컬럼)를 받아 원본 feature에 이어붙여 함께 압축하되, 축 표현(H)은 항상 원본 feature 개수만큼만 남김. 축별 대표 아이템, 유저별 잔차 기반 close/far 아이템 추출
+- `axis_engineering.py`: **어떤 두 feature를 어떤 연산으로 조합할지, 몇 라운드나 계속할지를 LLM이 직접 결정**하고 서버는 검증 + 재압축만 수행하는 `engineer_axes_llm` — genre는 이름 기반, svd/nmf/fa는 far 영화 번호 기반으로 후보 제시 방식이 다름, 중복 조합 재선택 방지
 - `profiling.py`: profile_raw(이력만) / profile_axis(축 + close/far 대비 조건) 두 프로필 생성 방식
 - `llm_client.py`: OpenRouter Chat Completions 호출 래퍼
 - `recommend.py`: 프로필 조건으로 후보 영화 LLM 랭킹
