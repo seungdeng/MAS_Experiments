@@ -4,25 +4,47 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from axis_engineering import engineer_axes_llm
 from config import (
     FACTOR_METHODS,
-    N_ENGINEERED_AXES,
+    MAX_ENGINEERED_AXES,
+    MAX_POOL_USERS,
+    MIN_HISTORY_LEN,
     N_EVAL_USERS,
     N_FACTORS,
     N_NEGATIVES,
     RANDOM_SEED,
     TOP_K,
 )
-from data import build_rating_matrix, leave_one_out_split, load_movielens
+from data import (
+    build_item_genre_matrix,
+    build_rating_matrix,
+    filter_users_by_history,
+    leave_one_out_split,
+    load_movielens,
+)
 from evaluate import hit_at_k, mrr, ndcg_at_k
-from mf import engineer_axes, fit_factorization, top_items_per_factor, user_residual_summary
+from mf import top_items_per_factor, user_residual_summary
 from profiling import profile_axis, profile_raw
 from recommend import rank_candidates
 
 
-def main(n_factors: int = N_FACTORS, n_eval_users: int = N_EVAL_USERS, out_path: str | None = None):
+def main(
+    n_factors: int = N_FACTORS,
+    n_eval_users: int = N_EVAL_USERS,
+    out_path: str | None = None,
+    min_history_len: int = MIN_HISTORY_LEN,
+    max_history_len: int | None = None,
+):
     rng = np.random.default_rng(RANDOM_SEED)
     ratings, movies = load_movielens()
+    ratings = filter_users_by_history(
+        ratings, min_history_len, max_history_len, max_users=MAX_POOL_USERS, seed=RANDOM_SEED
+    )
+    print(
+        f"user pool (history in [{min_history_len}, {max_history_len or 'inf'}], "
+        f"capped at {MAX_POOL_USERS}): {ratings.userId.nunique()}"
+    )
     train, test = leave_one_out_split(ratings, RANDOM_SEED)
 
     user_ids = sorted(ratings.userId.unique())
@@ -36,16 +58,34 @@ def main(n_factors: int = N_FACTORS, n_eval_users: int = N_EVAL_USERS, out_path:
 
     title_map = dict(zip(movies.movieId, movies.title))
     genre_map = dict(zip(movies.movieId, movies.genres))
+    item_genre_matrix, genre_names = build_item_genre_matrix(movies, item_ids)
 
-    # 방법별로 축/잔차를 미리 계산
+    # 방법별로 축/잔차를 미리 계산 (LLM 기반 feature 엔지니어링 포함)
     factorizations = {}
     for method in FACTOR_METHODS:
-        U, H, residual = fit_factorization(R, n_factors, method=method)
-        U, H, residual, engineered_desc = engineer_axes(U, H, residual, mask, n_rounds=N_ENGINEERED_AXES)
-        print(f"[{method}] engineered axes: {engineered_desc}")
+        genre_kwargs = (
+            {"item_genre_matrix": item_genre_matrix, "genre_names": genre_names}
+            if method == "genre"
+            else {}
+        )
+        U, H, residual, engineered_desc, axis_labels = engineer_axes_llm(
+            R,
+            n_factors,
+            mask,
+            method,
+            item_idx_inv,
+            title_map,
+            max_rounds=MAX_ENGINEERED_AXES,
+            **genre_kwargs,
+        )
+        print(f"[{method}] engineered features: {engineered_desc}")
         summaries = top_items_per_factor(H, item_idx_inv, n=8)
         summaries = [[(title_map.get(mid, str(mid)), w) for mid, w in fs] for fs in summaries]
-        factorizations[method] = {"residual": residual, "factor_summaries": summaries}
+        factorizations[method] = {
+            "residual": residual,
+            "factor_summaries": summaries,
+            "axis_labels": axis_labels,
+        }
 
     eval_users = rng.choice(
         test.userId.values, size=min(n_eval_users, len(test)), replace=False
@@ -73,7 +113,7 @@ def main(n_factors: int = N_FACTORS, n_eval_users: int = N_EVAL_USERS, out_path:
         candidates += [(m, title_map.get(m, str(m))) for m in negatives]
         rng.shuffle(candidates)
 
-        row = {"userId": uid}
+        row = {"userId": uid, "history_len": len(history) + 1}  # +1: leave-one-out으로 뺀 target 1개
 
         p_raw = profile_raw(history)
         ranked_raw = rank_candidates(p_raw, candidates)
@@ -85,10 +125,13 @@ def main(n_factors: int = N_FACTORS, n_eval_users: int = N_EVAL_USERS, out_path:
         for method in FACTOR_METHODS:
             residual = factorizations[method]["residual"]
             summaries = factorizations[method]["factor_summaries"]
+            axis_labels = factorizations[method]["axis_labels"]
             far_items = user_residual_summary(residual, u_row, item_ids, movies, mask, n=5, mode="far")
             close_items = user_residual_summary(residual, u_row, item_ids, movies, mask, n=5, mode="close")
 
-            p_axis = profile_axis(history, summaries, far_items, close_items, method=method)
+            p_axis = profile_axis(
+                history, summaries, far_items, close_items, method=method, axis_labels=axis_labels
+            )
             ranked_axis = rank_candidates(p_axis, candidates)
 
             row[f"profile_{method}"] = p_axis
@@ -112,5 +155,7 @@ if __name__ == "__main__":
     parser.add_argument("--n-factors", type=int, default=N_FACTORS)
     parser.add_argument("--n-eval-users", type=int, default=N_EVAL_USERS)
     parser.add_argument("--out", type=str, default=None, help="output CSV path (default: results.csv)")
+    parser.add_argument("--min-history-len", type=int, default=MIN_HISTORY_LEN)
+    parser.add_argument("--max-history-len", type=int, default=None, help="상한 없으면 미지정")
     args = parser.parse_args()
-    main(args.n_factors, args.n_eval_users, args.out)
+    main(args.n_factors, args.n_eval_users, args.out, args.min_history_len, args.max_history_len)
