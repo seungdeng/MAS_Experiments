@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정독 노트 3 — TRAIL (arXiv:2505.08638)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a2332; --ink-soft:#4a5568; --paper:#f7f8fa; --card:#ffffff; --line:#dde2ea;
+    --accent:#1e4f8f; --accent-bg:#e8f0fa;
+    --note:#0f6b4f; --note-bg:#e7f4ef;
+    --warn:#b45309; --warn-bg:#fdf3e3;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Pretendard Variable', Pretendard, -apple-system, sans-serif; background:var(--paper); color:var(--ink); line-height:1.85; font-size:15.5px; padding:0 0 90px}
+  .wrap{max-width:780px;margin:0 auto;padding:0 26px}
+  header{border-bottom:3px solid var(--accent); padding:50px 0 26px; margin-bottom:34px}
+  .doc-type{font-family:var(--mono); font-size:12px; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; margin-bottom:12px}
+  h1{font-family:'Noto Serif KR', serif; font-size:27px; font-weight:700; line-height:1.4}
+  .subtitle{font-size:15px; color:var(--ink-soft); margin-top:6px}
+  .meta{margin-top:14px; font-size:13.5px; color:var(--ink-soft); line-height:1.9}
+  .meta b{color:var(--ink)}
+  .meta a{color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); font-family:var(--mono); font-size:12.5px}
+  .oneliner{margin-top:16px; padding:14px 18px; background:var(--accent-bg); border-left:3px solid var(--accent); font-size:15px; font-weight:600}
+  h2{font-family:'Noto Serif KR', serif; font-size:20px; font-weight:700; margin:46px 0 14px; padding-top:6px}
+  h2 .n{font-family:var(--mono); font-size:13px; font-weight:500; color:var(--accent); margin-right:10px}
+  h3{font-size:15.5px; font-weight:700; margin:26px 0 8px}
+  p{margin:0 0 15px}
+  ul.ls, ol.ls{padding-left:22px; margin:0 0 15px}
+  ul.ls li, ol.ls li{margin-bottom:8px}
+  .quote{margin:20px 0; padding:13px 18px; background:var(--card); border-left:3px solid var(--accent); font-size:14px}
+  .quote .src{display:block; margin-top:6px; font-size:12px; color:var(--ink-soft); font-family:var(--mono)}
+  table{width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); margin:16px 0 24px; font-size:13px}
+  thead th{font-size:11.5px; font-weight:600; letter-spacing:.03em; text-align:left; padding:8px 10px; background:var(--accent); color:#fff; white-space:nowrap}
+  tbody td{padding:9px 10px; border-top:1px solid var(--line); vertical-align:top; line-height:1.55}
+  td.k{font-weight:700; white-space:nowrap}
+  td.num{text-align:right; font-family:var(--mono); font-size:12.5px; white-space:nowrap}
+  tr.best td{background:#f0f6ff; font-weight:600}
+  .note{margin:20px 0; padding:14px 18px; background:var(--note-bg); border-left:3px solid var(--note); font-size:14px}
+  .note b{color:var(--note)}
+  .note .tag{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; color:var(--note); display:block; margin-bottom:5px}
+  .warnbox{margin:20px 0; padding:14px 18px; background:var(--warn-bg); border-left:3px solid var(--warn); font-size:14px}
+  .warnbox b{color:var(--warn)}
+  .fig{margin:14px 0 20px; padding:11px 15px; background:var(--card); border:1px dashed var(--accent); border-radius:3px; font-size:13px}
+  .fig .f-tag{display:inline-block; font-family:var(--mono); font-size:10.5px; font-weight:500; background:var(--accent); color:#fff; padding:2px 7px; border-radius:2px; margin-right:8px}
+  .fig a{color:var(--accent); font-weight:600; text-decoration:none; border-bottom:1px solid var(--accent)}
+  .fig .f-desc{display:block; margin-top:4px; color:var(--ink-soft); font-size:12.5px}
+  .code{font-family:var(--mono); font-size:12px; background:var(--card); border:1px solid var(--line); padding:13px 16px; margin:14px 0 20px; line-height:1.75; overflow-x:auto; white-space:pre}
+  footer{margin-top:54px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-soft); font-family:var(--mono); line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="doc-type">정독 노트 3 / 3 · 데이터 형식과 난이도의 기준선</div>
+  <h1>TRAIL: Trace Reasoning and Agentic Issue Localization</h1>
+  <div class="subtitle">궤적 추론과 에이전트 이슈 위치 특정 — 관찰자 관점의 분류학과 스팬 수준 벤치마크</div>
+  <div class="meta">
+    <b>저자:</b> Darshan Deshpande, Varun Gangal, Hersh Mehta, Jitin Krishnan, Anand Kannappan, Rebecca Qian (Patronus AI)<br>
+    <b>발표:</b> 2025 (v3: 2025.06) · <a href="https://arxiv.org/abs/2505.08638">arXiv:2505.08638</a> · <a href="https://huggingface.co/datasets/PatronusAI/TRAIL">HuggingFace 데이터 공개</a><br>
+    <b>이 분야에서의 위치:</b> 산업(관측 도구 회사)에서 나온 벤치마크. OpenTelemetry 스팬 형식 채택으로 학술-산업을 잇고, "최고 모델 11%"라는 난이도 기준선을 세움.
+  </div>
+  <div class="oneliner">
+    에이전트 워크플로 트레이스의 평가·디버깅은 수작업 분석에 의존하고 있으며 규모를 감당하지 못한다. 형식적 오류 분류학과 인간 주석 트레이스 148건(오류 841개)을 제시한다 — 최신 장문맥 LLM조차 이 데이터에서 최고 11%에 그친다.
+  </div>
+</header>
+
+<h2><span class="n">1</span>한눈에 보기 — 문제의식</h2>
+
+<p>에이전트 워크플로가 다양한 도메인으로 확산되면서, 이들이 생성하는 복잡한 트레이스를 확장 가능하고 체계적으로 평가할 필요가 절실해졌다. 현재의 평가는 길고 긴 워크플로 트레이스에 대한 수작업·도메인 특화 인간 분석에 의존하는데, 이는 에이전트 출력의 복잡성과 양이 늘어나는 속도를 따라가지 못한다. 이 환경의 오류 분석은 외부 도구 출력과 언어모델 추론의 상호작용 때문에 더 복잡해서, 전통적 소프트웨어 디버깅보다 어렵다.</p>
+
+<p>또 하나의 배경은 <b>LLM-as-a-judge의 한계</b>다. LLM 판사는 여러 평가 영역에서 성과를 냈지만, 편향 전파와 긴 입력에 대한 강건성 부족이 알려져 있고, 트레이스 평가는 <b>긴 맥락 위에서의 견고한 추론</b>을 요구하기 때문에 이 영역에서는 아직 널리 적용되지 못했다. 그래서 저자들은 (1) 에이전트 워크플로 트레이스를 위한 견고하고 동적인 평가 방법의 필요를 논증하고, (2) 에이전트 시스템에서 마주치는 오류 유형의 형식적 분류학을 도입하며, (3) 이 분류학에 기반해 실제 벤치마크에 접지된 인간 주석 트레이스 148건(TRAIL)을 제시한다. 생태적 타당성(ecological validity)을 위해 트레이스는 단일·다중 에이전트 시스템 모두에서, 소프트웨어 엔지니어링과 오픈월드 정보 검색이라는 실전 응용을 중심으로 큐레이션됐다.</p>
+
+<div class="note">
+  <span class="tag">해설</span>
+  <b>AgentDebug와의 관점 차이.</b> AgentDebug의 분류학이 에이전트 <i>내부</i>(어느 모듈의 잘못인가)를 보는 아키텍처 관점이라면,
+  TRAIL은 트레이스를 <i>밖에서</i> 읽는 관찰자 관점이다 — 실행 기록에 나타난 이슈를 추론/시스템/계획·조정으로 나눈다.
+  같은 실패도 두 분류학에서 다른 이름을 갖게 되며, 이 미사상(未寫像)이 분야의 공백 중 하나다.
+</div>
+
+<h2><span class="n">2</span>핵심 기여</h2>
+
+<ol class="ls">
+  <li><b>TRAIL 분류학</b> — 에이전트 시스템의 오류를 3대분류(추론 / 시스템 실행 / 계획·조정) 아래 세밀하게 조직한 형식 분류 체계.</li>
+  <li><b>TRAIL 데이터셋</b> — GAIA(오픈월드 정보 검색)·SWE-bench(소프트웨어 엔지니어링) 기반의 대형 인간 주석 트레이스 148건, 고유 오류 841개. OpenTelemetry 표준 형식으로 수집돼 실제 관측 소프트웨어와 호환.</li>
+  <li><b>난이도의 실증</b> — 최신 장문맥 LLM들이 트레이스 디버깅에서 형편없이 수행함을 확인: 최고 Gemini-2.5-Pro가 TRAIL 전체에서 겨우 11%(joint accuracy). 8개 모델 중 3개는 전체 맥락을 처리조차 못 한다.</li>
+</ol>
+
+<h2><span class="n">3</span>주요 내용 I — TRAIL 오류 분류학</h2>
+
+<p>분류학은 3대분류·중분류·소분류의 계층이다(Figure 1). 관찰자가 트레이스에서 식별할 수 있는 이슈 중심으로 짜여 있다.</p>
+
+<table>
+  <thead><tr><th>대분류</th><th>중분류</th><th>소분류 (오류 유형)</th></tr></thead>
+  <tbody>
+    <tr><td class="k" rowspan="4">추론 오류<br>(Reasoning)</td><td>환각 (Hallucinations)</td><td>언어 전용 환각 · 도구 관련 환각</td></tr>
+    <tr><td>정보 처리</td><td>빈약한 정보 검색 · 도구 출력 오독</td></tr>
+    <tr><td>의사 결정</td><td>잘못된 문제 식별 · 도구 선택 오류</td></tr>
+    <tr><td>출력 생성</td><td>형식 오류(Formatting Errors) · 지시 불이행(Instruction Non-compliance)</td></tr>
+    <tr><td class="k" rowspan="3">시스템 실행 오류<br>(System Execution)</td><td>구성 (Configuration)</td><td>도구 정의 문제 · 환경 설정 오류</td></tr>
+    <tr><td>API 문제</td><td>레이트 리미팅 · 인증 오류 · 서비스 오류 · 리소스 없음</td></tr>
+    <tr><td>자원 관리</td><td>자원 고갈 · 타임아웃</td></tr>
+    <tr><td class="k" rowspan="2">계획·조정 오류<br>(Planning &amp; Coordination)</td><td>맥락 관리</td><td>맥락 처리 실패(Context Handling Failures) · 자원 남용(Resource Abuse)</td></tr>
+    <tr><td>과제 관리</td><td>목표 이탈(Goal Deviation) · 과제 오케스트레이션</td></tr>
+  </tbody>
+</table>
+
+<p>각 오류에는 위치(스팬 ID), 증거, 서술과 함께 <b>영향도(impact: LOW/MEDIUM/HIGH)</b>가 부여된다 — 드물지만 치명적인 유형(API 실패 등)과 흔하지만 가벼운 유형을 구별할 수 있게 하는 설계다.</p>
+
+<h2><span class="n">4</span>주요 내용 II — 데이터셋 구축</h2>
+
+<h3>4.1 트레이스 생성 — 두 개의 실전 무대</h3>
+
+<ul class="ls">
+  <li><b>GAIA (오픈월드 정보 검색):</b> 표준 계층 오케스트레이션 구조를 따라 Hugging Face의 OpenDeepResearch 에이전트로 트레이스 생성. 매니저와 검색 에이전트의 백본으로 당시 SOTA인 o3-mini-2025-01-31을 배정(강한 도구 사용·계획 능력 근거). 매니저 에이전트가 Visualizer·TextInspector 도구를, 검색 에이전트가 구글 검색·페이지 방문·아카이브 검색 등 8종 도구를 가진 구조(부록 Figure 7).</li>
+  <li><b>SWE-bench (소프트웨어 엔지니어링):</b> 단일 에이전트의 계획 오류와 맥락 처리 오류를 끌어내기 위해 CodeAct 에이전트를 사용 — 샌드박스 환경에서 파이썬 인터프리터와 gitingest 라이브러리에 접근. 백본은 SW 엔지니어링 성능이 강한 claude-3-7-sonnet-20250219. 나아가 <b>오류를 유기적으로(organically) 유도하기 위해</b> 출력 길이 제한, 탐색 강제 같은 지시적 제약을 프롬프트에 추가했다.</li>
+</ul>
+
+<div class="note">
+  <span class="tag">해설</span>
+  <b>"유기적 유도"의 위치.</b> 오류를 인위 주입(injection)한 것이 아니라, 제약을 걸어 에이전트가 자연스럽게 실수하기 쉬운
+  조건을 만든 것이다 — 합성 주입(Aegis류)과 순수 자연 실패의 중간쯤에 있는 데이터 확보 전략으로, 레이블은 여전히 사람이 단다.
+</div>
+
+<h3>4.2 형식 — OpenTelemetry 스팬</h3>
+
+<p>실전 트레이싱·관측 소프트웨어와의 호환성을 위해 모든 트레이스는 <b>OpenTelemetry</b>, 구체적으로 에이전트 호환 오픈소스 파생 표준인 openinference 형식으로 수집됐다. 트레이스는 스팬(span)들의 트리다 — 각 스팬은 timestamp, trace_id, span_id, parent_span_id, span_name(예: LLM 호출), 그리고 입력 메시지·모델명·토큰 수·출력 등을 담은 속성(attributes)으로 구성된다(Figure 2). 오류 주석은 스팬 ID를 위치로 참조한다.</p>
+
+<div class="code">// 스팬 구조 요지 (Figure 2 재구성)
+{ timestamp, trace_id, span_id, parent_span_id,
+  span_name: "LiteLLMModel.__call__", span_kind: "Internal",
+  attributes: { input.messages, llm.model_name, llm.token_count.{prompt,completion,total}, output.value, ... } }
+
+// 오류 주석 예
+{ category: "Instruction Non-compliance", location: "61c56...", 
+  evidence: "...", description: "모델이 최종 답을 직접 패치로 제출하지 않고 저장소 정보만 제공", impact: "HIGH" }</div>
+
+<h3>4.3 주석과 검증</h3>
+
+<p>소프트웨어 엔지니어링·로그 디버깅 전문성을 가진 <b>주석자 4명</b>이 트레이스를 라벨했다. 일치도 평가를 위해 별도의 63개 트레이스가 배정됐고, 큐레이션 기간 중 높은 주석자 간 일치가 확인됐다(세부 절차·수치는 부록 A.7).</p>
+
+<h3>4.4 데이터 통계</h3>
+
+<table>
+  <thead><tr><th>데이터</th><th>트레이스</th><th>스팬 (평균/트레이스)</th><th>오류</th><th>고유 오류 스팬</th></tr></thead>
+  <tbody>
+    <tr><td class="k">GAIA</td><td class="num">118</td><td class="num">977 (8.28)</td><td class="num">579</td><td class="num">383</td></tr>
+    <tr><td class="k">SWE-bench</td><td class="num">31</td><td class="num">1,010 (32.58)</td><td class="num">256</td><td class="num">192</td></tr>
+  </tbody>
+</table>
+
+<p>주석 후 검토 기준 오류는 GAIA 114개·SWE-bench 30개 트레이스에서 발견됐다. 분포의 특징: <b>출력 생성 오류가 압도적</b>이다 — 형식 오류와 지시 불이행만으로 전체 841개 중 353개, 약 42%. 반면 시스템 실행 오류는 드물다. 이 범주 불균형은 두 가지를 시사한다. 첫째, 출력 생성 오류의 만연은 신중한 프롬프트 엔지니어링에도 불구하고 현재 LLM 시스템이 고수준 추론과 과제 파라미터 이해에 어려움을 겪는다는 것. 둘째, API 실패 같은 오류는 드물지만 재앙적일 수 있고 복구가 어려워 탐지가 결정적이라는 것 — <b>드물지만 중대한 유형을 포함하는 분류 체계의 필요</b>가 여기서 나온다. 영향도 분포는 Medium 363(43.2%) &gt; High 304(36.1%) &gt; Low 174(20.7%)이며, 출력 생성 오류의 약 44%는 저영향이다.</p>
+
+<h3>4.5 맥락 길이 — 이 데이터의 구조적 난관</h3>
+
+<p>트레이스 JSON을 그대로 입력하면 맥락이 얼마나 긴가(Table 2): GAIA는 평균 286.85K 토큰, 최대 <b>7.50M</b>(gpt-4.1 토크나이저 기준). SWE-bench는 평균 616.92K~727.75K, 최대 2.05M~2.43M. 즉 <b>분포의 상당 부분이 최신 모델의 최대 입력 한도(200K~1M)를 초과</b>하고, 평균조차 컨텍스트 창의 상당 비율을 채운다(Figure 5). 8개 평가 모델 중 3개는 전체 맥락을 처리할 수 없었다.</p>
+
+<div class="warnbox">
+  <b>이 표가 말하는 것.</b> 트레이스 평가의 병목이 추론력 이전에 <b>입력 수용력</b>에 있다는 실증이다. "긴 궤적을 어떻게 잘라
+  보여줄 것인가"(압축·가지치기·윈도우)가 왜 이 분야의 중심 설계 변수인지가 이 수치들에서 나온다.
+</div>
+
+<h2><span class="n">5</span>실험 설계</h2>
+
+<ul class="ls">
+  <li><b>과제:</b> 트레이스(JSON)를 입력으로 주고, 오류의 위치(스팬)·범주·영향도를 예측하게 한다.</li>
+  <li><b>지표:</b> 범주 F1(Categorical F1), 위치 정확도(Location Accuracy), 그리고 위치+범주를 모두 맞혀야 하는 <b>Joint Accuracy</b>.</li>
+  <li><b>평가 모델:</b> 장문맥 SOTA 8종 — GPT-4.1, o1, o3, Claude-3.7-Sonnet, Llama-4-Maverick/Scout, Gemini-2.5-Pro/Flash.</li>
+</ul>
+
+<h2><span class="n">6</span>실험 결과</h2>
+
+<h3>6.1 주 결과 — 최고가 11%</h3>
+
+<p>현대의 장문맥 LLM들은 트레이스 디버깅에서 형편없이 수행한다: <b>최고인 Gemini-2.5-Pro가 TRAIL 전체에서 겨우 11%</b>(joint). 데이터별로는 GAIA 18%, SWE-bench 5%다. 8개 중 3개 모델은 전체 맥락을 처리하지 못했다. 결론부의 진단: 이 결과는 에이전트 시스템 고유의 복잡성과 LLM의 맥락 한계로 인해, 기존 모델이 복잡한 에이전트 트레이스를 체계적으로 평가하는 데 실패함을 보여주며, <b>확장 가능하고 체계적인 에이전트 워크플로 평가를 위한 새 프레임워크가 필요하다.</b></p>
+
+<h3>6.2 입력 길이와 성능의 관계 (Table 3)</h3>
+
+<table>
+  <thead><tr><th>상관</th><th>위치 정확도</th><th>Joint 정확도</th><th>범주 F1</th></tr></thead>
+  <tbody>
+    <tr><td class="k">Pearson r</td><td class="num">−0.379</td><td class="num">−0.291</td><td class="num">−0.296</td></tr>
+    <tr><td class="k">Spearman ρ</td><td class="num">−0.508</td><td class="num">−0.349</td><td class="num">−0.225</td></tr>
+  </tbody>
+</table>
+
+<p>입력이 길수록 성능이 떨어지며, <b>위치 특정이 가장 민감</b>하다(ρ=−0.508) — Who&amp;When의 Finding 4(길이 증가 시 단계 정확도가 특히 취약)와 정확히 같은 그림이 독립된 무대에서 재확인된 셈이다.</p>
+
+<h3>6.3 범주별 성능 (Figure 4)</h3>
+
+<ul class="ls">
+  <li><b>예측이 어려운 범주:</b> 맥락 처리 실패(Context Handling Failures)는 거의 모든 모델이 F1 ≈ 0.00 — 고급 추론을 요구한다는 뜻이며 유일한 예외가 Claude-3.7-Sonnet(0.18). 도구 선택 오류도 어렵다(대부분 0.00~0.08, 예외적으로 o3 0.53, Claude-3.7 0.27, Gemini-2.5-Pro 0.26). 과제 오케스트레이션도 전반적으로 낮다(0.00~0.08, Gemini-2.5-Flash만 0.47).</li>
+  <li><b>모델 간 성능이 갈리는 범주:</b> 목표 이탈은 Gemini 계열이 최고(Pro 0.70, Flash 0.41)인 반면 Claude·o3는 중간(0.31, 0.24), o1 등 비추론 모델은 최저(≤0.05). 빈약한 정보 검색도 Gemini 둘이 유독 좋다(0.50, 0.53; 나머지 &lt;0.30) — 맥락 관련 실패의 진단에 강하다는 시사.</li>
+  <li><b>의외의 패턴:</b> 언어 전용 환각은 모든 모델이 비교적 잘 잡는다(0.14~0.59) — 고급 추론 없이도 예측이 쉬운 편. 형식 오류는 비단조적이다: GPT-4.1(0.43)과 Gemini-2.5(0.44~0.57)가 좋고, o1·o3·Claude-3.7이 오히려 나쁘다(0.23~0.31) — 더 오래됐거나 비추론 모델인 o1·GPT-4.1이 o3를 이기는 범주라는 점이 눈에 띈다.</li>
+</ul>
+
+<h3>6.4 추론 노력(reasoning effort)의 효과 (Table 4)</h3>
+
+<table>
+  <thead><tr><th>o3 설정 (GAIA)</th><th>범주 F1</th><th>위치 정확도</th><th>Joint</th></tr></thead>
+  <tbody>
+    <tr><td class="k">high</td><td class="num">0.296</td><td class="num">0.535</td><td class="num">0.092</td></tr>
+    <tr><td class="k">medium</td><td class="num">0.277</td><td class="num">0.373</td><td class="num">0.104</td></tr>
+    <tr><td class="k">low</td><td class="num">0.264</td><td class="num">0.331</td><td class="num">0.071</td></tr>
+  </tbody>
+</table>
+
+<p>추론 노력을 높일수록 대체로 성능이 오른다 — TRAIL의 성능이 테스트타임 추론량의 수혜를 받으며, 추론 모델의 우위가 사전·사후 학습 개선만의 결과가 아님을 시사한다.</p>
+
+<h2><span class="n">7</span>한계와 시사점</h2>
+
+<ul class="ls">
+  <li><b>규모와 편중</b> — 148 트레이스, 2개 도메인. SWE-bench 쪽은 31건으로 특히 작다. 오류 분포도 출력 생성에 쏠려 있어(42%), 드문 범주의 평가는 표본이 얇다.</li>
+  <li><b>단일 시점 생성</b> — 특정 에이전트 구성(o3-mini 오케스트레이션, CodeAct+Claude-3.7)의 실패 분포이므로, 다른 스택에서는 분포가 다를 수 있다.</li>
+  <li><b>시사점 (첫 연구 관점)</b> — ① OTel/openinference 스팬 형식을 익히는 교재로 최적: 이 데이터를 로드해 길이·오류 위치·유형 분포를 재현하는 것이 웜업 과제다. ② "최고 11%, 길이와 음의 상관"이라는 기준선은 어떤 새 방법이든 기여할 공간이 크다는 뜻. ③ 스팬 수준 위치 + 범주 + 영향도라는 3요소 주석 설계는 자체 데이터를 만들 때의 참조 템플릿이다.</li>
+</ul>
+
+<h2><span class="n">8</span>그림·표 안내 (원문 PDF)</h2>
+
+<table>
+  <thead><tr><th>번호</th><th>내용</th><th>위치</th></tr></thead>
+  <tbody>
+    <tr><td class="k">Figure 1</td><td>TRAIL 오류 분류학 전체 계층도</td><td>1쪽</td></tr>
+    <tr><td class="k">Figure 2</td><td>스팬 구조와 오류 주석 실례 (7종 오류의 JSON)</td><td>3쪽</td></tr>
+    <tr><td class="k">Figure 3</td><td>데이터 통계 — 범주별 오류 수 · 트레이스당 오류 분포</td><td>5쪽</td></tr>
+    <tr><td class="k">Table 2 / Figure 5</td><td>입력 맥락 길이 통계 / 토큰 길이 분포 (맥락 한도 초과 시각화)</td><td>7·10쪽</td></tr>
+    <tr><td class="k">Figure 4</td><td>모델 × 오류 범주 F1 히트맵</td><td>8쪽</td></tr>
+    <tr><td class="k">Table 3 / Table 4</td><td>길이-성능 상관 / 추론 노력 변화 실험</td><td>8쪽</td></tr>
+    <tr><td class="k">Table 5</td><td>스팬·오류 주석 통계 (GAIA/SWE-bench)</td><td>10쪽</td></tr>
+    <tr><td class="k">Figure 6</td><td>오류 영향도 분포 (전체 / 범주별)</td><td>11쪽</td></tr>
+    <tr><td class="k">Figure 7</td><td>GAIA 검색 에이전트 오케스트레이션 구조</td><td>11쪽</td></tr>
+  </tbody>
+</table>
+
+<footer>
+  정독 노트 3/3 · TRAIL (arXiv:2505.08638) · 본 노트는 원문의 내용을 한국어로 재구성·해설한 것으로,
+  수치·정의는 원문 기준. 인용 시 원문 확인 권장 · 시리즈: ① Who&amp;When ② AgentDebug ③ TRAIL
+</footer>
+
+</div>
+</body>
+</html>
