@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정독 노트 1 — Who&When (arXiv:2505.00212)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a2332; --ink-soft:#4a5568; --paper:#f7f8fa; --card:#ffffff; --line:#dde2ea;
+    --accent:#1e4f8f; --accent-bg:#e8f0fa;
+    --note:#0f6b4f; --note-bg:#e7f4ef;
+    --warn:#b45309; --warn-bg:#fdf3e3;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Pretendard Variable', Pretendard, -apple-system, sans-serif; background:var(--paper); color:var(--ink); line-height:1.85; font-size:15.5px; padding:0 0 90px}
+  .wrap{max-width:780px;margin:0 auto;padding:0 26px}
+  header{border-bottom:3px solid var(--accent); padding:50px 0 26px; margin-bottom:34px}
+  .doc-type{font-family:var(--mono); font-size:12px; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; margin-bottom:12px}
+  h1{font-family:'Noto Serif KR', serif; font-size:27px; font-weight:700; line-height:1.4}
+  .subtitle{font-size:15px; color:var(--ink-soft); margin-top:6px}
+  .meta{margin-top:14px; font-size:13.5px; color:var(--ink-soft); line-height:1.9}
+  .meta b{color:var(--ink)}
+  .meta a{color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); font-family:var(--mono); font-size:12.5px}
+  .oneliner{margin-top:16px; padding:14px 18px; background:var(--accent-bg); border-left:3px solid var(--accent); font-size:15px; font-weight:600}
+  h2{font-family:'Noto Serif KR', serif; font-size:20px; font-weight:700; margin:46px 0 14px; padding-top:6px}
+  h2 .n{font-family:var(--mono); font-size:13px; font-weight:500; color:var(--accent); margin-right:10px}
+  h3{font-size:15.5px; font-weight:700; margin:26px 0 8px}
+  p{margin:0 0 15px}
+  ul.ls, ol.ls{padding-left:22px; margin:0 0 15px}
+  ul.ls li, ol.ls li{margin-bottom:8px}
+  .quote{margin:20px 0; padding:13px 18px; background:var(--card); border-left:3px solid var(--accent); font-size:14px}
+  .quote .src{display:block; margin-top:6px; font-size:12px; color:var(--ink-soft); font-family:var(--mono)}
+  table{width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); margin:16px 0 24px; font-size:13px}
+  thead th{font-size:11.5px; font-weight:600; letter-spacing:.03em; text-align:left; padding:8px 10px; background:var(--accent); color:#fff; white-space:nowrap}
+  tbody td{padding:9px 10px; border-top:1px solid var(--line); vertical-align:top; line-height:1.55}
+  td.k{font-weight:700; white-space:nowrap}
+  td.num{text-align:right; font-family:var(--mono); font-size:12.5px; white-space:nowrap}
+  td.hl{font-weight:700; color:var(--accent)}
+  tr.best td{background:#f0f6ff}
+  .note{margin:20px 0; padding:14px 18px; background:var(--note-bg); border-left:3px solid var(--note); font-size:14px}
+  .note b{color:var(--note)}
+  .note .tag{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; color:var(--note); display:block; margin-bottom:5px}
+  .warnbox{margin:20px 0; padding:14px 18px; background:var(--warn-bg); border-left:3px solid var(--warn); font-size:14px}
+  .warnbox b{color:var(--warn)}
+  .finding{margin:14px 0; padding:12px 16px; background:var(--card); border:1px solid var(--accent); border-radius:4px; font-size:14px}
+  .finding .f-n{display:inline-block; font-family:var(--mono); font-size:11px; font-weight:500; background:var(--accent); color:#fff; padding:1px 8px; border-radius:2px; margin-right:8px}
+  .fig{margin:14px 0 20px; padding:11px 15px; background:var(--card); border:1px dashed var(--accent); border-radius:3px; font-size:13px}
+  .fig .f-tag{display:inline-block; font-family:var(--mono); font-size:10.5px; font-weight:500; background:var(--accent); color:#fff; padding:2px 7px; border-radius:2px; margin-right:8px}
+  .fig a{color:var(--accent); font-weight:600; text-decoration:none; border-bottom:1px solid var(--accent)}
+  .fig .f-desc{display:block; margin-top:4px; color:var(--ink-soft); font-size:12.5px}
+  .code{font-family:var(--mono); font-size:12.5px; background:var(--card); border:1px solid var(--line); padding:13px 16px; margin:14px 0 20px; line-height:1.8; overflow-x:auto; white-space:pre-wrap}
+  footer{margin-top:54px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-soft); font-family:var(--mono); line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="doc-type">정독 노트 1 / 3 · 문제 정의의 뿌리</div>
+  <h1>Which Agent Causes Task Failures and When?</h1>
+  <div class="subtitle">On Automated Failure Attribution of LLM Multi-Agent Systems — "Who&amp;When"</div>
+  <div class="meta">
+    <b>저자:</b> Shaokun Zhang, Ming Yin 외 (Penn State, Duke, UW, NTU, Meta, Google DeepMind, Oregon State, AG2AI)<br>
+    <b>발표:</b> ICML 2025 (PMLR 267) · <a href="https://arxiv.org/abs/2505.00212">arXiv:2505.00212</a> · 코드·데이터 공개<br>
+    <b>이 분야에서의 위치:</b> "자동 실패 귀인(automated failure attribution)"이라는 연구 분야를 처음 제안·정식화한 논문. 이후 모든 귀인 연구의 출발점.
+  </div>
+  <div class="oneliner">
+    MAS의 실패 로그에서 "누가(어느 에이전트가), 언제(어느 단계에서)" 실패를 일으켰는지 자동으로 찾는 과제를 새 연구 분야로 정식화하고, 데이터셋(Who&amp;When)과 세 가지 방법을 제시한다. 최고 방법도 에이전트 식별 53.5%, 단계 식별 14.2%에 그친다.
+  </div>
+</header>
+
+<h2><span class="n">1</span>한눈에 보기 — 왜 이 연구인가</h2>
+
+<p>LLM 기반 멀티에이전트 시스템(MAS)은 만들어진 뒤 반복적으로 다듬어진다: 벤치마크로 평가하고, 실패하면 원인을 찾고, 시스템을 고치고, 다시 평가하는 사이클이다. 이 사이클의 핵심 단계가 <b>실패 귀인(failure attribution)</b> — 과제 실패로 직접 이어진 시스템 구성요소를 식별하는 일 — 인데, 주류 연구에서 크게 간과된 채 수작업으로 남아 있다. 복잡한 이력 로그를 분석하고 시스템의 기술적 세부를 헤쳐야 하는 상당한 노동이 들고, 벤치마크 평가 결과를 실패 구성요소에 대응시키는 일은 도메인 전문성에 크게 의존한다. 시스템이 복잡해질수록 고려해야 할 구성요소가 늘어나 이 어려움은 커진다.</p>
+
+<p>저자들은 이 수작업을 자동화하는 문제를 <b>새로운 연구 분야로 공식 제안</b>한다: 평가 결과(실패 로그)가 주어졌을 때, 실패 책임 에이전트(who)와 결정적 오류 단계(when)를 자동으로 식별하는 것. 이를 위해 ① 정답이 주석된 데이터셋 Who&amp;When, ② 세 가지 자동 귀인 방법과 장단점 분석, ③ 난이도의 실증(최신 추론 모델도 실용 수준에 못 미침)을 제공한다.</p>
+
+<div class="note">
+  <span class="tag">해설</span>
+  <b>이 논문을 첫 번째로 읽는 이유.</b> 단일 에이전트 연구를 하더라도, "결정적 오류"라는 문제 정의와 전역/순차/이진탐색이라는
+  베이스라인 구도, 그리고 맥락 길이·허용 오차에 관한 발견들이 전부 여기서 나왔다. 후속 논문들(AgentDebug, TRAIL 포함)은
+  이 틀 위에서 읽어야 위치가 보인다.
+</div>
+
+<h2><span class="n">2</span>핵심 기여</h2>
+
+<ol class="ls">
+  <li><b>과제의 정식화</b> — "자동 실패 귀인"을 새 연구 문제로 제안: 실패 로그 → (책임 에이전트, 결정적 오류 단계)의 자동 식별.</li>
+  <li><b>Who&amp;When 데이터셋</b> — 127개 LLM MAS의 광범위한 실패 로그에, 실패를 특정 에이전트와 결정적 오류 단계에 연결하는 세밀한 주석을 부착.</li>
+  <li><b>세 가지 자동 귀인 방법</b> — All-at-Once / Step-by-Step / Binary Search를 개발·평가하고 각각의 장단점을 정리.</li>
+  <li><b>난이도의 실증</b> — 최고 조합도 에이전트 53.5% / 단계 14.2%. 일부 방법은 무작위 이하. OpenAI o1, DeepSeek R1 같은 SOTA 추론 모델도 실용적 수준에 도달하지 못함을 확인.</li>
+</ol>
+
+<h2><span class="n">3</span>문제 정의</h2>
+
+<p>실패 귀인 과제의 입력과 출력은 이렇게 정의된다. 입력은 사용자 질의와 그에 대한 MAS의 <b>실패 로그</b>(에이전트들의 발화·행동이 시간순으로 기록된 것), 그리고 설정에 따라 정답(ground truth)이 주어질 수도, 안 주어질 수도 있다. 출력은 두 가지다:</p>
+
+<ul class="ls">
+  <li><b>실패 책임 에이전트 (who)</b> — 과제 실패에 직접적 책임이 있는 단일 에이전트.</li>
+  <li><b>결정적 오류 단계 (when, decisive error step)</b> — 실패로 이어진 오류가 발생한 특정 단계.</li>
+</ul>
+
+<div class="note">
+  <span class="tag">해설</span>
+  <b>"결정적"의 의미.</b> 로그에는 보통 여러 실수가 있다. 이 과제가 찾는 것은 아무 실수가 아니라, 그것을 고치면 결과가
+  달라졌을 — 즉 실패를 최종적으로 결정지은 — 가장 이른 오류다(주석 지침: 책임 에이전트를 먼저 정하고, 그 에이전트의 실수
+  단계 중 첫 번째를 선택). 이 반사실적 발상은 이후 AgentDebug의 critical error, AgenTracer의 counterfactual replay로
+  이어지는 이 분야의 표준 정의가 된다.
+</div>
+
+<h2><span class="n">4</span>Who&amp;When 데이터셋</h2>
+
+<h3>4.1 구성 — 두 종류의 시스템</h3>
+
+<p>데이터는 실패 로그의 출처에 따라 두 부분으로 나뉜다. 두 출처 모두, 각 벤치마크 질의를 풀지 못한 시스템만 남긴다(성공 로그 제외).</p>
+
+<table>
+  <thead><tr><th></th><th>Algorithm-Generated</th><th>Hand-Crafted</th></tr></thead>
+  <tbody>
+    <tr><td class="k">생성 방식</td><td>CaptainAgent가 과제별로 자동 생성한 MAS</td><td>사람이 정교하게 설계한 성숙 시스템 Magnetic-One</td></tr>
+    <tr><td class="k">과제 출처</td><td>GAIA 98건 + AssistantBench 28건</td><td>GAIA 30건 + AssistantBench 28건</td></tr>
+    <tr><td class="k">에이전트 수</td><td>1~4</td><td>2~5 (Orchestrator, WebSurfer, FileSurfer, Assistant 등)</td></tr>
+    <tr><td class="k">로그 길이</td><td>5~10 단계</td><td>5~130 단계</td></tr>
+    <tr><td class="k">특징</td><td>짧고 통제됨 — 자동 생성 MAS의 대표</td><td>길고 현실적 — 실전형 MAS의 대표</td></tr>
+  </tbody>
+</table>
+
+<p>총 184개의 실패 주석 과제가 만들어졌다(하이퍼파라미터: CaptainAgent 최대 10회 반복, Magnetic-One 최대 30라운드; 에이전트의 사고 과정은 라운드 수에 포함되지 않아 실제 로그는 더 길어진다).</p>
+
+<h3>4.2 주석 — 3인 전문가, 3라운드 절차</h3>
+
+<p>AI 에이전트 전문가 3인이 각 로그에 세 요소를 주석했다: 실패에 일차적 책임이 있는 <b>단일 에이전트</b>, 오류가 발생한 <b>특정 단계</b>, 그리고 실수의 이유에 대한 <b>자연어 설명</b>. 절차는 세 라운드다.</p>
+
+<ol class="ls">
+  <li><b>Round I — 개별 주석:</b> 표준 지침에 따라 로그를 3인에게 균등 배분해 주석. 각자 자신의 주석을 "확실함"과 "불확실함"으로 분류해 기록.</li>
+  <li><b>Round II — 합의 형성:</b> 불확실 주석 전체에 대해 협의. 단순 다수결이 아니라 <b>전원이 설득되어 합의에 도달할 때까지</b> 토론.</li>
+  <li><b>Round III — 교차 검증:</b> 서로의 주석을 검토해 기준 일관성을 점검하고, 불일치 발견 시 재토론·재주석.</li>
+</ol>
+
+<p>주석 지침의 핵심 규칙(부록 Figure 10): 책임 에이전트는 한 명만 고른다 — 여러 에이전트가 실수했다면 가장 심각한 실수를 한 쪽, 중복 작업만 한 에이전트와 실수한 에이전트가 있으면 실수한 쪽. 결정적 오류 단계는 <b>먼저 실수 에이전트를 정한 뒤</b> 그 에이전트의 실수 단계 중 <b>첫 번째</b>를 고르며, 인덱스는 0부터 센다.</p>
+
+<div class="warnbox">
+  <b>주석이 얼마나 힘든 일인지가 그 자체로 논거다.</b> 세 주석자는 각각 30.9, 30.2, 23.2 인시(人時)를 썼다 — 200건이 안 되는
+  로그에 사람 셋이 도합 84시간. 2라운드에서 불확실 표시 비율은 17~26%에 달했고, 초기 투표 불일치율은 쌍에 따라 최대 50%였다.
+  전문가에게도 어렵고 비싸다는 이 사실이 "자동화가 필요하다"는 논문 주장의 실증 근거가 된다. 웹브라우저를 쓴 에이전트의
+  실패라면 주석자가 브라우저 이력을 따라가 각 웹사이트를 방문하며 "정보가 없어서 실패인지, 검색을 못 해서 실패인지"까지
+  판별해야 했다.
+</div>
+
+<div class="fig">
+  <span class="f-tag">FIGURE</span><a href="https://arxiv.org/pdf/2505.00212#page=4" target="_blank">Figure 2 — 주석 비용·불확실률·불일치율 (PDF 4쪽)</a>
+  <span class="f-desc">주석 노동시간, 불확실 주석 비율, 주석자 간 초기 불일치율의 3패널. 수작업 귀인의 비용을 보여주는 근거 그림.</span>
+</div>
+
+<h3>4.3 데이터 예시</h3>
+
+<p>부록 Figure 9의 실제 사례 하나(질의: "2023년 1월 Queen Anne에서 팔린 단독주택의 최저가는?"): Algorithm-Generated 시스템에서 DataAnalysis_Expert가 "올바른 파일 경로가 없으니, <b>합성 데이터를 만들어</b> 접근법을 시연하겠다"고 진행한다 — 웹에서 실제 데이터를 가져와야 할 자리에서 가짜 데이터를 생성한 것이 결정적 오류(책임: DataAnalysis_Expert, 단계 7)로 주석됐다. Hand-Crafted 쪽 예시는 Assistant가 그룹을 잘못된 방향(직접 사무소에 연락하는 스크립트 작성)으로 이끈 단계 82가 결정적 오류다.</p>
+
+<h2><span class="n">5</span>세 가지 자동 귀인 방법</h2>
+
+<p>세 방법 모두 판정자로 LLM을 사용하며, 명시적 추론(reasoning) 지시를 프롬프트에 포함한다(이진 탐색 제외 — 단순 분류만 수행).</p>
+
+<table>
+  <thead><tr><th>방법</th><th>작동 방식</th><th>직관</th></tr></thead>
+  <tbody>
+    <tr><td class="k">All-at-Once<br>(전역)</td><td>실패 로그 전체를 한 번에 입력하고 책임 에이전트와 결정적 단계를 직접 묻는다</td><td>전체 맥락을 보고 판단 — 가장 싸다(추론 1회)</td></tr>
+    <tr><td class="k">Step-by-Step<br>(순차)</td><td>로그를 단계별로 누적 제시하며 "여기까지에서 결정적 오류가 발생했는가"를 매 단계 판단, 발견 시 종료</td><td>사람이 로그를 읽어 내려가는 방식의 모사 — 국소 판단</td></tr>
+    <tr><td class="k">Binary Search<br>(이진 탐색)</td><td>로그를 절반으로 나눠 오류가 있는 쪽을 고르게 하고, 그 절반을 다시 나누기를 log₂(n)회 반복</td><td>분할 정복 — 비용과 정밀도의 중간</td></tr>
+  </tbody>
+</table>
+
+<p>비용 분석(부록 D): All-at-Once는 단일 추론이라 가장 싸고(C + n·T), Step-by-Step은 결정적 오류 위치 i*에 따라 i*·C + T·i*(i*+1)/2로 비싸지며, Binary Search는 ⌈log₂n⌉회의 중간 규모다. 각 실험은 정답 제공(with GT) / 미제공(without GT) 두 설정으로 수행된다.</p>
+
+<h2><span class="n">6</span>실험 결과</h2>
+
+<h3>6.1 주 결과 (GPT-4o 판정, Table 1)</h3>
+
+<table>
+  <thead><tr><th>방법</th><th>설정</th><th>AG 에이전트</th><th>AG 단계</th><th>HC 에이전트</th><th>HC 단계</th></tr></thead>
+  <tbody>
+    <tr><td class="k">Random</td><td>—</td><td class="num">29.10</td><td class="num">19.06</td><td class="num">12.00</td><td class="num">4.16</td></tr>
+    <tr class="best"><td class="k">All-at-Once</td><td>GT 있음</td><td class="num"><b>54.33</b></td><td class="num">12.50</td><td class="num"><b>55.17</b></td><td class="num">5.26</td></tr>
+    <tr><td class="k">All-at-Once</td><td>GT 없음</td><td class="num">51.12</td><td class="num">13.53</td><td class="num">53.44</td><td class="num">3.51</td></tr>
+    <tr class="best"><td class="k">Step-by-Step</td><td>GT 있음</td><td class="num">35.20</td><td class="num"><b>25.51</b></td><td class="num">34.48</td><td class="num"><b>7.02</b></td></tr>
+    <tr><td class="k">Step-by-Step</td><td>GT 없음</td><td class="num">26.02</td><td class="num">15.31</td><td class="num">32.75</td><td class="num">8.77</td></tr>
+    <tr><td class="k">Binary Search</td><td>GT 있음</td><td class="num">44.13</td><td class="num">23.98</td><td class="num">51.72</td><td class="num">6.90</td></tr>
+    <tr><td class="k">Binary Search</td><td>GT 없음</td><td class="num">30.11</td><td class="num">16.59</td><td class="num">36.21</td><td class="num">6.90</td></tr>
+  </tbody>
+</table>
+
+<p>읽는 법: <b>에이전트 식별은 전역(All-at-Once)이, 단계 식별은 순차(Step-by-Step)가 이긴다.</b> 전역은 대화 로그 전체에 접근하므로 "누가"의 판단이 정확하지만, 긴 이력 속에서 정확한 실패 단계를 짚는 데는 오히려 어려움을 겪는다 — 심지어 단계 정확도에서 무작위보다 나쁜 경우도 있다. 순차는 맥락을 증분 처리해 집중된 판단이 가능하므로 "언제"에 강하다. 저자들은 이를 긴 맥락에서 특정 정보를 찾는 LLM의 고질적 약점('space-in-the-needle' 문제)으로 설명한다. 그리고 Hand-Crafted(긴 로그)에서 단계 정확도가 한 자릿수로 붕괴하는 것에 주목 — 로그가 길어질수록 과제가 급격히 어려워진다.</p>
+
+<div class="finding"><span class="f-n">Finding 1</span>더 넓은 실패 로그 맥락의 제공은 더 정확한 <b>에이전트 수준</b> 귀인을 가능하게 한다.</div>
+<div class="finding"><span class="f-n">Finding 2</span>맥락의 증분 처리는 더 나은 <b>단계 수준</b> 귀인을 낳는다 — LLM은 긴 맥락에서 정보 검색에 약하기 때문.</div>
+
+<h3>6.2 정답(GT) 제공의 효과와 모델 교차 검증</h3>
+
+<p>세 방법 모두 정답이 주어질 때 정확도가 더 높다. 질의의 정답이 각 에이전트 행동의 '골든 라벨'은 아니지만, 판정 LLM에게 유용한 참조 신호를 제공한다 — 예컨대 어떤 에이전트가 정답에 도달할 가능성이 없는 완전히 잘못된 방향으로 시스템을 이끌면, 정답 정보가 판정자에게 직접 경보를 줄 수 있다. 또한 GPT-4o 외에 GPT-4-turbo, GPT-4o-mini, Llama-3.1-8b/70b, Qwen-2.5-7b/72b로 반복한 결과, 방법 간 순위 구도는 대체로 유지된다(Finding 3).</p>
+
+<h3>6.3 맥락 길이의 영향 (Finding 4)</h3>
+
+<p>Hand-Crafted 로그를 길이 5단계 구간(Level 1: 5~17단계 → Level 5: 93~130단계)으로 나눠 분석하면, 모든 방법이 길이 증가에 따라 두 지표 모두 하락하며 <b>단계 정확도가 특히 민감하다.</b> 최대 길이 구간에서는 세 방법 모두 단계 정확도가 0% 근처로 수렴한다.</p>
+
+<div class="warnbox">
+  <b>이 그림(Figure 4b)이 후속 연구의 씨앗이다.</b> "길어지면 다 무너진다"는 이 관찰이, 로그 전체가 아니라 후보 주변의
+  국소 맥락만 보게 하자는 윈도우 증강류 접근의 직접적 동기가 된다.
+</div>
+
+<h3>6.4 허용 오차 분석 (Finding 5, Table 2)</h3>
+
+<p>실무에서는 정확한 단계가 아니라 "실수가 있을 법한 범위"만 알아도 충분한 경우가 많다. 허용 오차 ±k를 주고 다시 채점하면:</p>
+
+<table>
+  <thead><tr><th>허용 오차</th><th>All-at-Once</th><th>Step-by-Step</th><th>Binary Search</th></tr></thead>
+  <tbody>
+    <tr><td class="k">±1</td><td class="num">12.07</td><td class="num"><b>14.66</b></td><td class="num">13.79</td></tr>
+    <tr><td class="k">±2</td><td class="num"><b>19.83</b></td><td class="num">16.38</td><td class="num">18.97</td></tr>
+    <tr><td class="k">±3</td><td class="num"><b>30.17</b></td><td class="num">18.10</td><td class="num">22.41</td></tr>
+    <tr><td class="k">±5</td><td class="num"><b>43.10</b></td><td class="num">33.62</td><td class="num">36.21</td></tr>
+  </tbody>
+</table>
+
+<p>엄격 기준(±0~1)에선 순차가 이기지만, 허용 오차가 커질수록 전역이 역전한다 — 넓은 맥락을 보는 방법이 "근처"까지는 잘 가고, 좁게 보는 방법이 "정확한 지점"에 강하다는 상보성이 드러난다. 정밀도가 필요하면 순차, 대략적 위치면 전역이라는 실무 지침이 나온다.</p>
+
+<h3>6.5 통계적 관점 (Finding 6)과 하이브리드 (Finding 7)</h3>
+
+<p>개별 사례 수준의 귀인은 부정확하지만, <b>데이터셋 전체 통계로는 유의미하다</b>: 세 방법 모두가 "결정적 오류를 가장 많이 낸 에이전트"로 지목한 것이 실제 정답(Orchestrator, agent 3)과 일치했고 상위 2개 예측도 대체로 정답 분포와 일치한다 — 개별 진단은 못 미더워도 "우리 시스템에서 누가 자주 문제인가"의 시스템 개선 힌트로는 이미 쓸 만하다는 뜻이다.</p>
+
+<p>하이브리드: 전역으로 책임 에이전트를 먼저 예측하고, 그 에이전트의 행동 단계들만 순차로 검사하는 조합은 에이전트 57.02% / 단계 12.28%로 <b>두 지표 모두 최고</b>가 된다 — 전역이 후보 단계 범위를 좁혀 순차의 부담을 줄여주기 때문. 대신 토큰 비용이 149,177로 전역 단독(17,106)의 약 9배다.</p>
+
+<div class="note">
+  <span class="tag">해설</span>
+  <b>2단계 구조의 원형.</b> 이 하이브리드가 "싼 방법으로 후보를 좁히고 → 좁힌 범위에서 정밀 판단"이라는 설계 패턴의
+  원형이다. 윈도우 증강(후보 단계 주변 국소 재식별)은 이 패턴을 단계 차원에서 밀고 나간 후속이라 볼 수 있다.
+</div>
+
+<h3>6.6 추론 모델과 추론 프롬프트</h3>
+
+<p>OpenAI o1, DeepSeek R1 같은 SOTA 추론 모델을 투입해도 실용적 수준(practical usability)에 도달하지 못한다 — 과제의 어려움이 모델 추론력 부족만의 문제가 아님을 시사한다. 한편 프롬프트의 명시적 추론 지시를 제거하면 성능이 유의하게 하락한다(예: 전역의 에이전트 정확도 −7.4%p, 순차의 단계 정확도 −4.4%p) — 귀인 프롬프트에 추론 유도가 필수라는 실무 지침.</p>
+
+<h2><span class="n">7</span>한계와 시사점</h2>
+
+<ul class="ls">
+  <li><b>정답의 주관성</b> — 주석 지침 자체가 "다소의 주관성을 허용"하며, 불확실률 17~26%가 그 방증. 정답 레이블은 절대 진리가 아니라 전문가 합의다. 이 데이터로 방법을 비교할 때 작은 차이는 신중히 해석해야 한다.</li>
+  <li><b>규모</b> — 184건은 통계적 검정 없이 순위를 단정하기엔 작다.</li>
+  <li><b>관찰 수준</b> — 로그는 에이전트 발화·행동 중심이며 내부 상태·도구 원시 응답을 다 담지 않는다(후속 연구 TraceElephant가 공격하는 지점).</li>
+  <li><b>시사점</b> — ① 결정적 오류라는 반사실적 정의의 확립, ② 전역/순차의 상보성(에이전트 vs 단계)과 맥락 길이 민감성이라는 두 축의 발견, ③ 통계적 수준에서는 이미 유용하다는 실용적 위안, ④ 그리고 "최고가 14.2%"라는 사실 자체가 이 분야 전체를 연 공백 선언이다.</li>
+</ul>
+
+<h2><span class="n">8</span>그림·표 안내 (원문 PDF)</h2>
+
+<table>
+  <thead><tr><th>번호</th><th>내용</th><th>위치</th></tr></thead>
+  <tbody>
+    <tr><td class="k">Figure 1</td><td>수작업 vs 자동 실패 귀인의 개념도 — 논문 전체 요약 그림</td><td><a class="fig" style="border:none;padding:0;margin:0;background:none" href="https://arxiv.org/pdf/2505.00212#page=1" target="_blank">1쪽</a></td></tr>
+    <tr><td class="k">Figure 2</td><td>주석 비용·불확실률·불일치율</td><td>4쪽</td></tr>
+    <tr><td class="k">Table 1</td><td>주 결과 (3방법 × GT 유무 × 2데이터)</td><td>6쪽</td></tr>
+    <tr><td class="k">Figure 4</td><td>맥락 길이별 성능 하락 곡선</td><td>7쪽</td></tr>
+    <tr><td class="k">Table 2</td><td>허용 오차별 단계 정확도</td><td>7쪽</td></tr>
+    <tr><td class="k">Table 3</td><td>하이브리드 방법 비교 (비용 포함)</td><td>8쪽</td></tr>
+    <tr><td class="k">Figure 9</td><td>주석 데이터 실례 (부동산 질의)</td><td>14쪽</td></tr>
+    <tr><td class="k">Figure 10</td><td>주석 지침 전문</td><td>15쪽</td></tr>
+  </tbody>
+</table>
+
+<footer>
+  정독 노트 1/3 · Who&amp;When (arXiv:2505.00212, ICML 2025) · 본 노트는 원문의 내용을 한국어로 재구성·해설한 것으로,
+  수치·정의는 원문 기준. 인용 시 원문 확인 권장 · 시리즈: ① Who&amp;When ② AgentDebug ③ TRAIL
+</footer>
+
+</div>
+</body>
+</html>
