@@ -40,9 +40,9 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('traces'); ap.add_argument('-o', '--out', default='table8_gold.json')
     a = ap.parse_args()
-    traces = [json.loads(l) for l in open(a.traces)]
+    traces = [json.loads(l) for l in open(a.traces, encoding='utf-8')]
     r = derive(traces)
-    json.dump(r, open(a.out, 'w'), ensure_ascii=False, indent=1)
+    json.dump(r, open(a.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     for k, v in r.items():
         print(f"\n[{k}] n={v['n']}")
         print(f"  t0 평균 {v['t0']['mean']} / 중앙값 {v['t0']['median']}   |  T 평균 {v['T']['mean']} / 중앙값 {v['T']['median']}")

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""e1_coverage.py — E1 커버리지(진단가능성) 계산기 → Table 7.
+"""e1_coverage.py — E1 커버리지(진단가능성) 계산기 → Table 9.
 
-규칙 (paper_final IV장, 2026-08-18 개정):
+규칙 (paper_final IV장, 2026-08-31 개정):
 - 항목별 요구 필드 전부 가용 → 해당 trace에서 '판정가능'.
 - 요구 수준: 판정 방식 R(규칙) → explicit(E) 필드 필요.
              L→H(LLM 판정) → embedded(B)도 허용 (LLM은 자유텍스트 판독 가능).
              R+L → R 성분 요구 필드는 E, L 성분은 B 허용.
              R(파생) → 입력 항목이 판정가능하고 step_index가 E이면 판정가능.
 - 벤치마크 수준 판정가능: trace의 p≥0.9 에서 판정가능. N/A는 분모 제외.
-- L3-06 삭제됨(2026-08-18) → 26항목.
+- L3-06 삭제됨(2026-08-18) → 26항목. L3-02·03(파생: 오류 위치/전파 길이) 삭제됨(2026-08-31) → 24항목.
 """
 import json, argparse, sys
 from collections import defaultdict
@@ -37,8 +37,6 @@ ITEMS = [
     ('L2-A1', 'L',   [('plan_field', 'EB'), ('action_field', 'EB')], None),
     ('L2-A2', 'R+L', [('action_field', 'E'), ('observation', 'EB')], None),
     ('L3-01', 'L',   [], 'ANY_L2'),
-    ('L3-02', 'Rd',  [('step_index', 'E')], 'L3-01'),
-    ('L3-03', 'Rd',  [('step_index', 'E')], 'L3-01'),
     ('L3-04', 'L',   [('reflection_field', 'EB'), ('plan_field', 'EB')], None),
     ('L3-05', 'Rd',  [], 'ANY_L2'),
 ]
@@ -93,10 +91,10 @@ if __name__ == '__main__':
     ap.add_argument('--p', type=float, default=0.9)
     ap.add_argument('-o', '--out', default='table7.json')
     a = ap.parse_args()
-    traces = [json.loads(l) for l in open(a.traces)]
+    traces = [json.loads(l) for l in open(a.traces, encoding='utf-8')]
     t7 = table7(traces, a.p)
-    json.dump(t7, open(a.out, 'w'), ensure_ascii=False, indent=1)
-    print(f'26항목 기준 (L3-06 삭제 반영) | p>={a.p} | N/A=0')
+    json.dump(t7, open(a.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f'24항목 기준 (L3-06, L3-02·03 삭제 반영) | p>={a.p} | N/A=0')
     for k, v in t7.items():
         print(f"\n[{k}] n={v['n']}  커버리지 = {len(v['determinable'])}/{v['denom']} = {v['coverage']:.1%}")
         print('  판정가능:', ' '.join(v['determinable']))

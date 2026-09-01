@@ -56,5 +56,5 @@ if __name__ == '__main__':
         print('  (κ 역설 케이스: κ 낮고 AC1 높음이 정상)')
         print('SELFTEST OK')
     else:
-        rows = json.load(open(a.sheet))
+        rows = json.load(open(a.sheet, encoding='utf-8'))
         run([(str(r['r1']), str(r['r2'])) for r in rows])
