@@ -1,0 +1,27 @@
+﻿python : [경고] 존재하지 않는 항목ID 환각으로 제외: {'L2-1': 1, 'L3-02': 1}
+At line:3 char:1
++ python e3_judge.py traces.jsonl --aggregate judg_gemini.jsonl judg_ha ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([경고] 존재하지 않는 항목... 1, 'L3-02': 1}:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+[발생률 ('claude-haiku', 'a')] L2-A1:231/373  L2-A2:209/303  L2-M1:86/373  L2-M2:269/375  L2-M3:321/371  L2-P1:44/384  L2-P2:124/371  L2-P3:374/484  L2-R1:303/376  L2-R2:333/376  L3-01:330/524  L3-04:265/391
+
+[발생률 ('deepseek-flash', 'a')] L2-A1:88/338  L2-A2:91/349  L2-M1:70/255  L2-M2:36/227  L2-M3:71/210  L2-P1:41/368  L2-P2:39/367  L2-P3:232/384  L2-R1:130/275  L2-R2:132/294  L3-01:156/435  L3-04:218/464
+
+[발생률 ('gemini-flash', 'a')] L2-A1:19/340  L2-A2:56/343  L2-M1:129/370  L2-M2:9/372  L2-M3:4/359  L2-P1:28/418  L2-P2:40/418  L2-P3:185/428  L2-R1:117/376  L2-R2:86/371  L3-01:295/358  L3-04:239/416
+
+[발생률 ('gpt5-mini', 'a')] L2-A1:109/368  L2-A2:151/329  L2-M1:118/342  L2-M2:39/304  L2-M3:149/305  L2-P1:41/384  L2-P2:26/372  L2-P3:306/398  L2-R1:207/328  L2-R2:183/331  L3-01:175/475  L3-04:295/494
+
+[모델 간 일치 ('claude-haiku', 'a') vs ('deepseek-flash', 'a')] n=6299  Po=0.6006  |  Cohen κ=0.4198 (Pe=0.3116)  |  Gwet AC1=0.4011 (Pe=0.3330)
+
+[모델 간 일치 ('claude-haiku', 'a') vs ('gemini-flash', 'a')] n=6384  Po=0.5938  |  Cohen κ=0.4114 (Pe=0.3100)  |  Gwet AC1=0.3948 (Pe=0.3289)
+
+[모델 간 일치 ('claude-haiku', 'a') vs ('gpt5-mini', 'a')] n=6384  Po=0.6573  |  Cohen κ=0.4921 (Pe=0.3252)  |  Gwet AC1=0.4873 (Pe=0.3315)
+
+[모델 간 일치 ('deepseek-flash', 'a') vs ('gemini-flash', 'a')] n=6299  Po=0.6592  |  Cohen κ=0.4613 (Pe=0.3672)  |  Gwet AC1=0.5030 (Pe=0.3141)
+
+[모델 간 일치 ('deepseek-flash', 'a') vs ('gpt5-mini', 'a')] n=6299  Po=0.6738  |  Cohen κ=0.5010 (Pe=0.3462)  |  Gwet AC1=0.5161 (Pe=0.3258)
+
+[모델 간 일치 ('gemini-flash', 'a') vs ('gpt5-mini', 'a')] n=6384  Po=0.6642  |  Cohen κ=0.4774 (Pe=0.3573)  |  Gwet AC1=0.5072 (Pe=0.3186)

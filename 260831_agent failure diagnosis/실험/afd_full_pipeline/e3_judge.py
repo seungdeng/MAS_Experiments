@@ -9,7 +9,7 @@
   python3 e3_judge.py traces.jsonl --run --model gpt5-mini --out judg_gpt5mini.jsonl
   python3 e3_judge.py traces.jsonl --run --model deepseek-flash --out judg_deepseek.jsonl
   python3 e3_judge.py traces.jsonl --run --model gemini-flash --variant b --out judg_gemini_vb.jsonl
-  python3 e3_judge.py traces.jsonl --aggregate judg_*.jsonl      # 집계·모델간 κ(전체 쌍)·골드정합
+  python3 e3_judge.py traces.jsonl --aggregate judg_*.jsonl      # 집계·모델간 κ(전체 쌍)
 
 설계 (paper_final IV장, 2026-08-31 개정 반영):
 - 모듈군 4분할 프롬프트: M(L2-M1~M3) / R(L2-R1~R2) / P(L2-P1~P3) / A(L2-A1~A2) + T(L3-01·04)
@@ -20,8 +20,9 @@
 - 프롬프트 변형 b: 문항 순서 역순 + 지시문 재서술 (자기 일관성용).
 - 절단 정책: 스텝당 1,200자 + 트레이스 총 100,000자 (초과 시 앞 60%/뒤 40% 보존, 중간 생략 표기).
 - 시드성 재현: temperature=0. 골드 라벨은 프롬프트에 절대 미포함.
-- 모든 체크리스트 항목은 O/X(참/거짓/판정불가) 이진판정이며, L3-01의 근거 단계(step)는
-  판정 자체가 아니라 골드 정합 분석(Table 8)을 위한 보조 필드다.
+- 모든 체크리스트 항목은 O/X(참/거짓/판정불가) 이진판정이다. step 필드는 채점 대상이 아닌
+  참고용 근거 정보로만 응답에 남기며, 정답 step과 대조하는 골드 앵커 정합(Table 8)은
+  이진판정 원칙에 맞지 않아 취소됨(2026-09-03).
 """
 import json, os, sys, argparse, time, re, urllib.request
 
@@ -52,9 +53,10 @@ PRICE = {   # $/MTok (in, out), OpenRouter passthrough 표준가 2026-08
     'deepseek-flash': (0.03, 0.16),
 }
 OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-STEP_CAP, TRACE_CAP, OUT_TOK = 1200, 100_000, 1500   # 700→1500: gpt-5-mini 등 추론모델이
-                                                      # reasoning 토큰으로 예산을 소진해 content가
-                                                      # 잘리는 문제(2026-09-01 관측) 방지 여유분
+STEP_CAP, TRACE_CAP, OUT_TOK = 1200, 100_000, 2200   # 700→1500→2200: 추론모델(gpt-5-mini,
+                                                      # deepseek-flash)이 reasoning 토큰으로
+                                                      # 예산을 소진해 content가 잘리는 문제
+                                                      # (2026-09-01/02 관측) 방지 여유분
 
 GROUPS = {
  'M': [('L2-M1','이전 기록에 없는 사실을 회상하는가'),('L2-M2','기록에 있는 정보를 회상하지 못하는가'),('L2-M3','요약이 과제 관련 핵심 세부를 누락하는가')],
@@ -94,9 +96,10 @@ def build_prompt(trace, gkey, variant='a'):
 
 
 def call_api(model_id, system, user, key, max_retry=1):
+    # reasoning.effort는 provider별로 해석이 달라 deepseek 등에서 무시/과다소모될 수 있어
+    # 토큰 상한(max_tokens) 형태로 명시 — reasoning에 최대 400, 나머지는 실제 JSON 답변용으로 남긴다.
     body = json.dumps({'model': model_id, 'max_tokens': OUT_TOK, 'temperature': 0,
-                       'reasoning': {'effort': 'low'},   # 추론모델(gpt-5-mini 등)의 reasoning 토큰이
-                                                          # max_tokens를 다 먹어 content가 잘리는 것 방지
+                       'reasoning': {'max_tokens': 400},
                        'messages': [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}]}).encode()
     for attempt in range(max_retry + 1):
         try:
@@ -151,16 +154,37 @@ def run(traces, model, out, variant, key):
         print(f'{n+1}/{len(traces)} ({t["trace_id"]})', file=sys.stderr, flush=True)
 
 
-def aggregate(traces, judg_files):
+VALID_ITEMS = {iid for qs in GROUPS.values() for iid, _ in qs}
+
+
+def aggregate(judg_files):
     from collections import defaultdict, Counter
-    gold = {t['trace_id']: t['gold'] for t in traces}
-    bm = {t['trace_id']: (t['benchmark'], t['subset']) for t in traces}
     J = defaultdict(dict)   # (model)-> trace -> item -> v/step
+    skipped = 0
+    bad_ids = Counter()
     for jf in judg_files:
         for row in map(json.loads, open(jf, encoding='utf-8')):
             items = (row['result'] or {}).get('items', {})
+            if isinstance(items, list):
+                # 드물게 모델이 {items:{id:{...}}} 대신 [{id/itemId, v/value, step, why}] 형태로 응답 —
+                # 딕셔너리로 정규화해 살린다 (형식만 다를 뿐 판정 자체는 유효한 데이터).
+                norm = {}
+                for e in items:
+                    if not isinstance(e, dict): continue
+                    iid = e.get('id') or e.get('itemId')
+                    if not iid: continue
+                    norm[iid] = {'v': e.get('v', e.get('value')), 'step': e.get('step'), 'why': e.get('why')}
+                items = norm
+            if not isinstance(items, dict):
+                skipped += 1; continue
             for iid, v in items.items():
+                if iid not in VALID_ITEMS:   # 모델이 존재하지 않는/삭제된 항목ID를 환각한 경우 제외
+                    bad_ids[iid] += 1; continue
                 J[(row['model'], row['variant'])].setdefault(row['trace_id'], {})[iid] = v
+    if skipped:
+        print(f'[경고] items 형식 불량으로 건너뜀: {skipped}건', file=sys.stderr)
+    if bad_ids:
+        print(f'[경고] 존재하지 않는 항목ID 환각으로 제외: {dict(bad_ids)}', file=sys.stderr)
     keys = sorted(J)
     # (1) 발생률 (Table 11)
     for k in keys:
@@ -184,19 +208,8 @@ def aggregate(traces, judg_files):
                         pairs.append((str(va.get('v')), str(vb.get('v'))))
             if pairs:
                 print(f'\n[모델 간 일치 {a} vs {b}] ', end=''); krun(pairs)
-    # (3) 골드 앵커 정합 (Table 8; L3-01 evidence step, ±k. v는 O/X 판정, step은 보조 필드)
-    for k in keys:
-        hit = {0: 0, 1: 0, 3: 0, 5: 0}; n = 0
-        for tid, items in J[k].items():
-            g = gold.get(tid, {})
-            if g.get('step') is None: continue
-            v = items.get('L3-01')
-            if not isinstance(v, dict) or v.get('step') is None: continue
-            n += 1; d = abs(int(v['step']) - g['step'])
-            for w in hit:
-                if d <= w: hit[w] += 1
-        if n:
-            print(f'\n[골드 앵커 L3-01 {k}] n={n} exact {hit[0]/n:.1%} | ±1 {hit[1]/n:.1%} | ±3 {hit[3]/n:.1%} | ±5 {hit[5]/n:.1%}')
+    # Table 8(골드 앵커 정합)은 취소됨 — 전 체크리스트 이진판정 원칙상 LLM에게 step 번호를
+    # 채점 대상으로 요구하지 않기로 함(2026-09-03). step 필드는 여전히 참고용 보조정보로만 응답에 남음.
 
 
 if __name__ == '__main__':
@@ -216,5 +229,5 @@ if __name__ == '__main__':
     elif a.run:
         key = os.environ.get('OPENROUTER_API_KEY') or sys.exit('OPENROUTER_API_KEY 환경변수 필요')
         run(traces, a.model, a.out, a.variant, key)
-    elif a.aggregate: aggregate(traces, a.aggregate)
+    elif a.aggregate: aggregate(a.aggregate)
     else: ap.print_help()
