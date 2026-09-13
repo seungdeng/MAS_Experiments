@@ -28,7 +28,7 @@ def norm_whowhen(root):
     for subset, sub in (('Algorithm-Generated', 'AG'), ('Hand-Crafted', 'HC')):
         for p in sorted(glob.glob(os.path.join(root, subset, '*.json')),
                         key=lambda x: int(os.path.basename(x)[:-5])):
-            d = json.load(open(p))
+            d = json.load(open(p, encoding='utf-8'))
             hist = d['history']
             steps = []
             for i, h in enumerate(hist):
@@ -84,13 +84,13 @@ def norm_aeb(root):
     골드 step이 궤적 범위(1..n)를 벗어나면 gold.step=None + 사유 기록 (1건 존재: GAIA_003)."""
     labels = {}
     for f in ('alfworld', 'gaia', 'webshop'):
-        for x in json.load(open(os.path.join(root, 'Label', f'{f}_labels.json'))):
+        for x in json.load(open(os.path.join(root, 'Label', f'{f}_labels.json'), encoding='utf-8')):
             labels[x['trajectory_id']] = x
     traces = []
     for sub in ('ALFWorld', 'WebShop', 'GAIA'):
         for p in sorted(glob.glob(os.path.join(root, 'Original_Failure_Trajectory', sub, '*.json'))):
             tid = os.path.basename(p)[:-5]
-            d = json.load(open(p))
+            d = json.load(open(p, encoding='utf-8'))
             msgs, md = d['messages'], d.get('metadata', {})
             steps = []
             for i, m in enumerate(msgs):
@@ -247,7 +247,7 @@ if __name__ == '__main__':
     pq_list = [(s, p) for s, p in (('GAIA', a.trail_gaia), ('SWE', a.trail_swe)) if p]
     if pq_list:
         traces += norm_trail(pq_list)
-    with open(a.out, 'w') as f:
+    with open(a.out, 'w', encoding='utf-8') as f:
         for t in traces:
             f.write(json.dumps(t, ensure_ascii=False) + '\n')
     print(f'{len(traces)} traces -> {a.out}')
