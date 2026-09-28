@@ -86,9 +86,6 @@ def find_traces(path=None):
     return alt if os.path.exists(alt) else path
 
 
-# Truncation policy (characters). Over the cap: keep head 70% + tail 30% and mark the omission.
-STEP_CAP, OBS_CAP, TASK_CAP, TRACE_CAP = 6000, 2000, 6000, 300_000
-
 SYSTEM = ('You are an evaluator that analyzes execution logs of LLM agents. Read the [Execution Log] in the user '
           'message and follow the [Instruction] that comes after it. Output a single JSON object and nothing else. '
           'Do not guess or fill in information that is not in the log, and give a positive verdict only when '
@@ -96,47 +93,39 @@ SYSTEM = ('You are an evaluator that analyzes execution logs of LLM agents. Read
 
 
 # ---------------------------------------------------------------- log rendering
-def clip_ht(s, cap, head_ratio=0.7):
-    s = s or ''
-    if len(s) <= cap:
-        return s
-    h = int(cap * head_ratio)
-    return s[:h] + f'\n...[{len(s) - cap} chars omitted]...\n' + s[-(cap - h):]
-
-
-def render_step(s, step_cap=STEP_CAP, obs_cap=OBS_CAP):
-    txt = f"[step {s['i']}] ({s.get('agent', '')}) " + clip_ht(s['content'], step_cap)
+def render_step(s):
+    txt = f"[step {s['i']}] ({s.get('agent', '')}) " + (s.get('content') or '')
     if s.get('obs'):
-        txt += '\n  <obs> ' + clip_ht(s['obs'], obs_cap)
+        txt += '\n  <obs> ' + s['obs']
     return txt
 
 
-def render_log(trace, step_cap=STEP_CAP, obs_cap=OBS_CAP, task_cap=TASK_CAP, trace_cap=TRACE_CAP):
-    """trace -> prompt log string. Step numbers are always 0-based (trace['steps'][k]['i'])."""
+def render_log(trace):
+    """Render every normalized field and step without truncation."""
     head = []
     if trace.get('task_spec'):
-        head.append(f"[TASK] {clip_ht(trace['task_spec'], task_cap)}")
+        head.append(f"[TASK] {trace['task_spec']}")
     if trace.get('meta'):
         head.append('[META] ' + ', '.join(f'{k}={v}' for k, v in trace['meta'].items()))
-    blocks = [render_step(s, step_cap, obs_cap) for s in trace['steps']]
-    head_txt = '\n'.join(head)
-    total = len(head_txt) + sum(len(b) + 1 for b in blocks)
-    if total > trace_cap:  # keep the first 60% / last 40% of the budget as whole steps, omit the middle
-        budget = trace_cap - len(head_txt)
-        front, back, used = [], [], 0
-        for b in blocks:
-            if used + len(b) > budget * 0.6:
-                break
-            front.append(b); used += len(b) + 1
-        used = 0
-        for b in reversed(blocks[len(front):]):
-            if used + len(b) > budget * 0.4:
-                break
-            back.append(b); used += len(b) + 1
-        back.reverse()
-        a, z = len(front), len(blocks) - len(back) - 1
-        blocks = front + [f'...[steps {a}-{z} omitted: length limit]...'] + back
-    return '\n'.join([head_txt] + blocks) if head_txt else '\n'.join(blocks)
+    return '\n'.join(head + [render_step(s) for s in trace['steps']])
+
+
+def shorten_log(text, byte_budget):
+    """Keep head/tail (70/30) and visibly mark missing text; preserve UTF-8."""
+    raw = text.encode('utf-8')
+    if len(raw) <= byte_budget:
+        return text
+    marker = '\n...[log content omitted to fit context]...\n'
+    remaining = byte_budget - len(marker.encode('utf-8'))
+    if remaining < 2:
+        raise InputTooLongError('input_too_long: no room for log after instructions and output budget')
+    head = max(1, int(remaining * 0.7))
+    tail = remaining - head
+    return raw[:head].decode('utf-8', errors='ignore') + marker + raw[-tail:].decode('utf-8', errors='ignore')
+
+
+class InputTooLongError(ValueError):
+    """Even the fixed instructions and minimum output cannot fit."""
 
 
 # ---------------------------------------------------------------- OpenRouter
@@ -225,14 +214,21 @@ class LLM:
         self.skipped = [p for p, v in (('temperature', temperature), ('reasoning', reasoning)) if v is not None and p not in self.params]
 
     def _max_tokens(self, log_text, instruction):
-        """'max' (default) = the model's maximum output, reduced only if prompt + output would not fit in the
-        context window (input tokens estimated conservatively at 2.5 chars/token). An int overrides."""
-        if isinstance(self.max_tokens, int):
-            return self.max_tokens
+        """Budget full input using UTF-8 bytes + framing allowance, not exact tokens.
+
+        The request fitter trims the log only when this conservative budget requires it.
+        """
+        requested = self.max_tokens if isinstance(self.max_tokens, int) else self.max_out
         if not self.ctx:
-            return self.max_out
-        est_in = int((len(SYSTEM) + len(log_text) + len(instruction)) / 2.5) + 500
-        return max(1024, min(self.max_out, self.ctx - est_in))
+            return requested
+        estimate = len((SYSTEM + '[Execution Log]\n' + log_text + instruction).encode('utf-8')) + 2048
+        available = self.ctx - estimate
+        minimum = requested if isinstance(self.max_tokens, int) else min(1024, requested)
+        if available < minimum:
+            raise InputTooLongError(
+                f'input_too_long: conservative input budget={estimate}, '
+                f'output budget={minimum}, context={self.ctx}; fixed request budget cannot fit')
+        return min(requested, available)
 
     def _body(self, log_text, instruction):
         log_part = {'type': 'text', 'text': '[Execution Log]\n' + log_text}
@@ -277,6 +273,8 @@ class LLM:
                 hint = ' (402: OpenRouter reserves credit for max_tokens; top up or pass a lower --max-tokens N)' if code == 402 else ''
                 raise FatalAPIError(f'HTTP {err}{hint}')                    # bad key / no credits / bad model
             low = str(msg).lower()
+            if code == 413:
+                return {'_error': f'input_too_long: {msg}'}
             if code == 400:
                 if 'context' in low and ('length' in low or 'maximum' in low or 'exceed' in low) or 'too long' in low:
                     return {'_error': f'input_too_long: {msg}'}
@@ -288,8 +286,32 @@ class LLM:
     def ask(self, log_text, instruction, attempts=2):
         """-> (parsed JSON dict or {'_error': ...}, usage dict). Config errors raise FatalAPIError."""
         usage, last = {}, 'unknown'
+        original = log_text
+        try:
+            if self.ctx:
+                requested = self.max_tokens if isinstance(self.max_tokens, int) else min(1024, self.max_out)
+                fixed = len((SYSTEM + '[Execution Log]\n' + instruction).encode('utf-8')) + 2048
+                log_text = shorten_log(original, self.ctx - fixed - requested)
+            body = self._body(log_text, instruction)
+        except InputTooLongError as exc:
+            return {'_error': str(exc)}, usage
+        reductions = 0
         for _ in range(attempts):
-            resp = self._post(self._body(log_text, instruction))
+            resp = self._post(body)
+            while str(resp.get('_error', '')).startswith('input_too_long:') and reductions < 8:
+                reductions += 1
+                try:
+                    log_text = shorten_log(original, len(log_text.encode('utf-8')) // 2)
+                    body = self._body(log_text, instruction)
+                except InputTooLongError:
+                    break
+                resp = self._post(body)
+            # Numeric fields survive per-layer and per-run usage aggregation.
+            omitted = max(0, len(original) - len(log_text.replace('\n...[log content omitted to fit context]...\n', '')))
+            usage.update({'input_truncated_calls': int(log_text != original),
+                          'input_original_chars': len(original),
+                          'input_omitted_chars': omitted,
+                          'context_retries': reductions})
             if '_error' in resp:
                 return {'_error': resp['_error']}, usage
             u = resp.get('usage') or {}
@@ -359,7 +381,7 @@ def make_llm(a):
 
 def add_select_args(ap):
     ap.add_argument('traces', nargs='?', default=DEFAULT_TRACES, help='default: data/traces.jsonl')
-    ap.add_argument('--subset', action='append', help='e.g. WhoWhen/AG, AEB/GAIA, TRAIL (repeatable)')
+    ap.add_argument('--subset', action='append', help='e.g. WhoWhen/AG, AEB/GAIA, AgentRx/tau_retail (repeatable)')
     ap.add_argument('--limit', type=int, help='keep the first N after selection (pilot runs)')
     ap.add_argument('--sample', type=int, help='random N after selection (fixed seed)')
     ap.add_argument('--seed', type=int, default=20260920)

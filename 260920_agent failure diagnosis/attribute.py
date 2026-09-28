@@ -92,13 +92,19 @@ def task_instruction(trace, extra=''):
         who = ('This log is a single agent with a modular reasoning loop (memory, reflection, plan, action).\n'
                'Identify (1) the step where the decisive error occurred and (2) the module in which the error originated.')
         fmt = '{"step": <int>, "module": "memory|reflection|plan|action|system", "reason": "<=40 words"}'
+    elif bm == 'AgentRx':
+        who = ('This is a retail service conversation with system policy, user, assistant, and tool messages.\n'
+               'Each [step N] is one message, including system and user messages; tool responses have their own steps.\n'
+               'Identify the first unrecoverable critical failure in this conversation. Earlier recoverable errors are not the root cause.')
+        fmt = '{"step": <int>, "reason": "<=40 words"}'
     else:  # TRAIL: the log is a flattened OpenTelemetry span tree
         who = ('This log is a flattened OpenTelemetry span tree of an agent run (each "[step N]" is one span; ">" marks nesting depth).\n'
                'Identify the step (span) where the decisive error occurred.')
         fmt = '{"step": <int>, "reason": "<=40 words"}'
     return ('[Instruction] Failure attribution\n'
             'The agent run in the log above failed to accomplish its task. '
-            'The decisive error is the earliest error that led to the failure.\n'
+            + ('The decisive error is the first unrecoverable critical failure.\n' if bm == 'AgentRx'
+               else 'The decisive error is the earliest error that led to the failure.\n')
             + who + '\n'
             '"step" must be the integer N of the "[step N]" marker in the log (0-based).'
             + ('\n\n' + extra if extra else '')

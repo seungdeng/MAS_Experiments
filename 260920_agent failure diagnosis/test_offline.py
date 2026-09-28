@@ -123,8 +123,28 @@ def test_llm_class():
     m = common.LLM('e/f')
     assert m._body('x' * 1000, 'i')['max_tokens'] == 128000                      # default = model max output
     assert common.LLM('e/f', max_tokens=500)._body('x', 'i')['max_tokens'] == 500   # explicit override
-    big = m._body('x' * 900_000, 'i')['max_tokens']                              # long prompt: reduced to fit the context
-    assert 1024 <= big < 128000 and big + 900_000 / 2.5 <= 400000, big
+    big = m._body('x' * 300_000, 'i')['max_tokens']                              # long prompt: reduced to fit the context
+    assert 1024 <= big < 128000 and big + 300_000 <= 400000, big
+    sent = []
+    def success(body):
+        sent.append(body)
+        return {'choices': [{'message': {'content': '{"ok": true}'}, 'finish_reason': 'stop'}]}
+    m._post = success
+    result, usage = m.ask('x' * 400_000, 'i')
+    assert result == {'ok': True} and usage['input_truncated_calls'] == 1
+    assert usage['input_omitted_chars'] > 0 and 'omitted to fit context' in sent[-1]['messages'][1]['content'][0]['text']
+    fixed = common.LLM('e/f', max_tokens=128000)
+    fixed._post = success
+    assert fixed.ask('x' * 300_000, 'i')[1]['input_truncated_calls'] == 1
+    assert sent[-1]['max_tokens'] == 128000
+    responses = iter([{'_error': 'input_too_long: provider limit'}, success({})])
+    m._post = lambda body: next(responses)
+    result, usage = m.ask('x' * 10000, 'i')
+    assert result == {'ok': True} and usage['context_retries'] == 1 and usage['input_truncated_calls'] == 1
+    m._post = success
+    assert m.ask('complete log', 'i')[1]['input_truncated_calls'] == 0
+    unicode_log = '\uac00' * 10000
+    assert len(common.shorten_log(unicode_log, 1000).encode('utf-8')) <= 1000
     assert common.LLM('c/d')._body('x', 'i')['max_tokens'] == 32768             # model without limit metadata
     print('ok 4: request body / supported-parameter gating / max_tokens=max / usage.cost / error paths')
 
@@ -133,8 +153,13 @@ def test_render_and_evaluate():
     log = common.render_log(TRACE)
     assert log.startswith('[TASK] find X\n[META] model=m\n[step 0] (m)') and '<obs> o2' in log
     big = dict(TRACE, steps=[{'i': i, 'agent': 'm', 'content': 'x' * 900, 'obs': ''} for i in range(400)])
-    r = common.render_log(big, trace_cap=100_000)
-    assert len(r) < 105_000 and 'omitted: length limit' in r and '[step 0]' in r and '[step 399]' in r
+    big['task_spec'] = 'TASK' * 2000
+    big['steps'][200]['content'] = 'MIDDLE' * 2000
+    big['steps'][200]['obs'] = 'OBS' * 2000
+    r = common.render_log(big)
+    assert len(r) > 300_000 and 'omitted' not in r
+    assert big['task_spec'] in r and big['steps'][200]['content'] in r and big['steps'][200]['obs'] in r
+    assert all(f'[step {i}]' in r for i in range(400))
 
     gold = [dict(TRACE, trace_id=f'T{i}', gold={'step': 5, 'agent': None, 'module': 'plan', 'type': None}) for i in range(10)]
     tmp = tempfile.mkdtemp()
@@ -152,7 +177,7 @@ def test_render_and_evaluate():
     assert m['n'] == 10 and m['hit'][0] == 1 and m['hit'][1] == 2 and m['module'] == [10, 10]
     assert res[('ckl', 'm')][('AEB', 'ALL')]['hit'][0] == 4
     assert abs(evaluate.mcnemar_exact(3, 0) - 0.25) < 1e-12 and evaluate.mcnemar_exact(0, 0) == 1.0
-    print('ok 5: rendering (truncation keeps head/tail steps) and evaluation metrics')
+    print('ok 5: rendering (full task, steps, observations preserved) and evaluation metrics')
 
 
 def test_paths():
@@ -170,6 +195,48 @@ def test_paths():
     print('ok 6: data/ and results/ path helpers')
 
 
+def test_agentrx():
+    import normalize
+    with tempfile.TemporaryDirectory() as tmp:
+        os.makedirs(os.path.join(tmp, 'tau_retail'))
+        os.makedirs(os.path.join(tmp, 'ground_truth'))
+        messages = [
+            {'index': 1, 'role': 'system', 'content': 'Retail policy'},
+            {'index': 2, 'role': 'user', 'content': 'Return my order'},
+            {'index': 3, 'role': 'assistant', 'content': None,
+             'tool_calls': [{'id': 'call1', 'function': {'name': 'return_order', 'arguments': '{}'}}]},
+            {'index': 4, 'role': 'tool', 'content': 'done', 'tool_call_id': 'call1'},
+        ]
+        row = {'task_id': 2, 'traj': messages, 'reward': 0,
+               'info': {'task': {'actions': ['SECRET_REFERENCE'], 'outputs': ['SECRET_OUTPUT']}}}
+        label = {'trajectory_id': 2, 'failures': [
+            {'failure_id': 1, 'step_number': 1, 'failure_category': 'Earlier error'},
+            {'failure_id': 2, 'step_number': 3, 'failure_category': 'SECRET_CATEGORY',
+             'step_reason': 'SECRET_EXPLANATION', 'failed_agent': 'Assistant'}],
+            'root_cause': {'failure_id': 2}}
+        def write(name, data):
+            with open(os.path.join(tmp, name), 'w', encoding='utf-8') as fh:
+                json.dump(data, fh)
+        write('tau_retail/tau_dataset_failed.json', [row])
+        write('ground_truth/tau_ground_truth.json', [label])
+        trace, = normalize.norm_agentrx(tmp)
+        assert trace['gold']['step'] == 2 and trace['gold']['source_step'] == 3
+        assert len(trace['steps']) == 4 and trace['steps'][3]['agent'] == 'tool'
+        prompt = common.render_log(trace)
+        assert 'SECRET_' not in prompt and 'return_order' in prompt and 'call1' in prompt
+        instruction = attribute.build_instruction(trace, 'aao')
+        assert 'first unrecoverable' in instruction and 'OpenTelemetry' not in instruction
+        label['failures'][1]['step_number'] = 99
+        write('ground_truth/tau_ground_truth.json', [label])
+        try:
+            normalize.norm_agentrx(tmp)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Invalid root cause step accepted')
+    print('ok 7: AgentRx root cause mapping, tool messages, label isolation, invalid gold rejection')
+
+
 if __name__ == '__main__':
     test_dependency()
     row = test_full()
@@ -177,4 +244,5 @@ if __name__ == '__main__':
     test_llm_class()
     test_render_and_evaluate()
     test_paths()
+    test_agentrx()
     print('ALL OFFLINE TESTS PASSED')

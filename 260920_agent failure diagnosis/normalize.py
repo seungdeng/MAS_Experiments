@@ -109,6 +109,59 @@ def norm_aeb(root):
     return traces
 
 
+# ---------------------------------------------------------------- AgentRx / tau-bench
+def norm_agentrx(root):
+    """Keep all messages and map explicit source indices to zero-based steps.
+
+    Only runtime messages are exposed. Reward info, reference actions/outputs,
+    and failure explanations must never enter task_spec, meta, or steps.
+    """
+    def read(relative):
+        with open(os.path.join(root, relative), encoding='utf-8') as fh:
+            return json.load(fh)
+
+    rows = read('tau_retail/tau_dataset_failed.json')
+    labels = read('ground_truth/tau_ground_truth.json')
+    by_id = {str(row['task_id']): row for row in rows}
+    if len(by_id) != len(rows):
+        raise ValueError('AgentRx: duplicate task_id')
+    label_ids = [str(lab['trajectory_id']) for lab in labels]
+    if len(set(label_ids)) != len(labels) or set(label_ids) != set(by_id):
+        raise ValueError('AgentRx: failed trajectories and labels must match one-to-one')
+    traces = []
+    for lab in labels:
+        tid = str(lab['trajectory_id'])
+        row = by_id[tid]
+        messages = row['traj']
+        id2idx = {}
+        steps = []
+        for i, msg in enumerate(messages):
+            index = msg['index']
+            if not isinstance(index, int) or index in id2idx:
+                raise ValueError(f'AgentRx {tid}: invalid or duplicate message index')
+            id2idx[index] = i
+            parts = [msg.get('content') or '']
+            for key in ('tool_calls', 'tool_call_id', 'name'):
+                if msg.get(key):
+                    parts.append(key + ': ' + json.dumps(msg[key], ensure_ascii=False))
+            steps.append({'i': i, 'source_index': index, 'agent': msg['role'],
+                          'content': '\n'.join(part for part in parts if part), 'obs': ''})
+        cause_id = lab['root_cause']['failure_id']
+        causes = [failure for failure in lab['failures'] if failure['failure_id'] == cause_id]
+        if len(causes) != 1 or causes[0]['step_number'] not in id2idx:
+            raise ValueError(f'AgentRx {tid}: root cause cannot be mapped to a message')
+        cause = causes[0]
+        traces.append({
+            'trace_id': f'AgentRx-tau_retail-{tid}', 'benchmark': 'AgentRx', 'subset': 'tau_retail',
+            'task_spec': '', 'meta': {}, 'n_steps': len(steps),
+            'gold': {'step': id2idx[cause['step_number']], 'agent': None, 'module': None,
+                     'type': cause['failure_category'], 'source_step': cause['step_number'],
+                     'failed_agent': cause.get('failed_agent')},
+            'steps': steps,
+        })
+    return traces
+
+
 # ---------------------------------------------------------------- TRAIL
 def _pyeval(s):
     """OTel 필드는 파이썬 repr 문자열 — ast.literal_eval, 실패 시 None."""
@@ -199,19 +252,33 @@ def _is_json(s):
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--whowhen', help='Who&When 루트 (Algorithm-Generated/, Hand-Crafted/ 를 포함)')
+    ap.add_argument('--agentrx', help='AgentRx root (tau_retail/, ground_truth/)')
     ap.add_argument('--aeb', help='AgentErrorBench 루트 (Label/, Original_Failure_Trajectory/ 를 포함)')
     ap.add_argument('--trail-gaia')
     ap.add_argument('--trail-swe')
     ap.add_argument('-o', '--out', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'traces.jsonl'))
     a = ap.parse_args()
+    # No source flags: use the self-contained current experiment corpus.
+    if not any((a.whowhen, a.aeb, a.agentrx, a.trail_gaia, a.trail_swe)):
+        raw = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'raw')
+        a.whowhen = os.path.join(raw, 'WhoWhen')
+        a.aeb = os.path.join(raw, 'AgentErrorBench')
+        a.agentrx = os.path.join(raw, 'AgentRx')
+    for source in (a.whowhen, a.aeb, a.agentrx):
+        if source and not os.path.isdir(source):
+            ap.error(f'Data directory does not exist: {source}')
     traces = []
     if a.whowhen:
         traces += norm_whowhen(a.whowhen)
     if a.aeb:
         traces += norm_aeb(a.aeb)
+    if a.agentrx:
+        traces += norm_agentrx(a.agentrx)
     pq_list = [(s, p) for s, p in (('GAIA', a.trail_gaia), ('SWE', a.trail_swe)) if p]
     if pq_list:
         traces += norm_trail(pq_list)
+    if not traces:
+        ap.error('No traces found; check source paths')
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, 'w', encoding='utf-8') as f:
         for t in traces:
@@ -222,6 +289,6 @@ if __name__ == '__main__':
         ts = [t for t in traces if t['benchmark'] == bm and t['subset'] == sub]
         with_gold = sum(1 for t in ts if t['gold']['step'] is not None)
         steps = [s for t in ts for s in t['steps']]
-        obs_cov = sum(1 for s in steps if s['obs']) / len(steps)
+        obs_cov = sum(1 for s in steps if s['obs']) / len(steps) if steps else 0
         extra = f' | obs 채움 {obs_cov:.0%}' if bm == 'AEB' else ''
         print(f'[{bm}/{sub}] n={n} gold_step 보유 {with_gold}/{n} | 평균 단계 {len(steps) / n:.1f}{extra}')

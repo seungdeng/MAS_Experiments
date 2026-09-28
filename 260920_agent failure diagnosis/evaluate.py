@@ -23,8 +23,8 @@ from checklist import EN, ERROR, INDET, L0, NO_ERROR, UPPER
 from common import expand_results, find_traces, latest, read_jsonl
 
 KS = (0, 1, 3, 5)
-BENCH = ('AEB', 'TRAIL', 'WhoWhen')
-SUBSETS = [('AEB', 'ALFWorld'), ('AEB', 'WebShop'), ('AEB', 'GAIA'), ('TRAIL', 'GAIA'), ('TRAIL', 'SWE'),
+BENCH = ('AEB', 'AgentRx', 'WhoWhen')
+SUBSETS = [('AEB', 'ALFWorld'), ('AEB', 'WebShop'), ('AEB', 'GAIA'), ('AgentRx', 'tau_retail'),
            ('WhoWhen', 'AG'), ('WhoWhen', 'HC')]
 
 
@@ -84,9 +84,9 @@ def eval_attr(traces, files):
 def print_attr_compact(res):
     """한 행 = (방식, 모델). 벤치마크 3묶음(전체)만 exact / ±3 (+ 모듈·에이전트) 로 요약."""
     ns = {b: max(per.get((b, 'ALL'), {}).get('n', 0) for per in res.values()) for b in BENCH}
-    print(f'귀인 성능 (%).  n: AEB {ns["AEB"]} / TRAIL {ns["TRAIL"]} / Who&When {ns["WhoWhen"]}   (exact=단계 정확일치, ±3=3단계 이내)')
-    print(f'{"":6s} {"":34s} | {"AEB":^20s} | {"TRAIL":^11s} | {"Who&When":^20s} |')
-    print(f'{"method":6s} {"model":34s} | {"exact":>5s} {"±3":>5s} {"module":>7s} | {"exact":>5s} {"±3":>5s} | {"exact":>5s} {"±3":>5s} {"agent":>7s} | {"fail":>4s} | {"평가한 n (A/T/W)":>17s}')
+    print(f'귀인 성능 (%).  n: AEB {ns["AEB"]} / AgentRx {ns["AgentRx"]} / Who&When {ns["WhoWhen"]}   (exact=단계 정확일치, ±3=3단계 이내)')
+    print(f'{"":6s} {"":34s} | {"AEB":^20s} | {"AgentRx":^11s} | {"Who&When":^20s} |')
+    print(f'{"method":6s} {"model":34s} | {"exact":>5s} {"±3":>5s} {"module":>7s} | {"exact":>5s} {"±3":>5s} | {"exact":>5s} {"±3":>5s} {"agent":>7s} | {"fail":>4s} | {"평가한 n (A/R/W)":>17s}')
     for (method, model), per in res.items():
         cells, fail = [], 0
         for b in BENCH:
