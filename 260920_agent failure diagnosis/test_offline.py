@@ -6,7 +6,7 @@
  2) 모두 충족 → 3콜, L2 오류 step 이 결과에 반영
  3) 귀인 프롬프트: 체크리스트 블록에 판단 불가 항목이 없음, view=errors 는 오류 항목만
  4) LLM 클래스: 캐시 마커/지원 파라미터 처리, 응답 파싱·usage.cost 합산, finish_reason=length 처리
- 5) evaluate: 정확일치·±k·McNemar
+ 5) evaluate: 정확일치·우연 보정·McNemar
 """
 import json
 import os
@@ -162,6 +162,7 @@ def test_render_and_evaluate():
     assert all(f'[step {i}]' in r for i in range(400))
 
     gold = [dict(TRACE, trace_id=f'T{i}', gold={'step': 5, 'agent': None, 'module': 'plan', 'type': None}) for i in range(10)]
+    gold = [dict(t, steps=[{'i': i, 'agent': 'm'} for i in range(10)], n_steps=10) for t in gold]
     tmp = tempfile.mkdtemp()
     def write(name, method, steps):
         p = os.path.join(tmp, name)
@@ -170,14 +171,66 @@ def test_render_and_evaluate():
                 f.write(json.dumps({'trace_id': f'T{i}', 'benchmark': 'AEB', 'subset': 'GAIA', 'method': method, 'model': 'm',
                                     'pred': {'step': s, 'module': 'plan'}}) + '\n')
         return p
-    base = write('a.jsonl', 'aao', [5, 4, 9, 9, 9, 9, 9, 9, 9, 9])       # exact 1, ±1 2
+    base = write('a.jsonl', 'aao', [5, 4, 9, 9, 9, 9, 9, 9, 9, 9])       # exact 1
     new = write('b.jsonl', 'ckl', [5, 5, 5, 5, 9, 9, 9, 9, 9, 9])        # exact 4
     res, groups, g = evaluate.eval_attr(gold, [base, new])
-    m = res[('aao', 'm')][('AEB', 'GAIA')]
-    assert m['n'] == 10 and m['hit'][0] == 1 and m['hit'][1] == 2 and m['module'] == [10, 10]
-    assert res[('ckl', 'm')][('AEB', 'ALL')]['hit'][0] == 4
+    m = res[('aao', 'm')][('AEB', 'GAIA')]['step']
+    assert m['n'] == 10 and m['hit'] == 1 and m['adjusted_n'] == 10
+    assert abs(m['adjusted_sum']) < 1e-12
+    assert res[('ckl', 'm')][('AEB', 'ALL')]['step']['hit'] == 4
     assert abs(evaluate.mcnemar_exact(3, 0) - 0.25) < 1e-12 and evaluate.mcnemar_exact(0, 0) == 1.0
     print('ok 5: rendering (full task, steps, observations preserved) and evaluation metrics')
+
+
+def test_adjusted_accuracy_and_coverage():
+    import copy
+    import io
+    from contextlib import redirect_stdout
+    assert evaluate.corrected(True, 5) == 1
+    assert evaluate.corrected(False, 5) == -0.25
+    assert abs(evaluate.corrected(False, 50) + 1 / 49) < 1e-12
+    assert evaluate.corrected(True, 1) is None
+    assert evaluate.corrected(False, 0) is None
+    for n in (5, 50):
+        assert abs(sum(evaluate.corrected(i == 0, n) for i in range(n)) / n) < 1e-12
+    traces = [dict(TRACE, trace_id=str(n), steps=[{'i': i, 'agent': 'm'} for i in range(n)]) for n in (5, 50)]
+    rows = [{'trace_id': str(n), 'method': 'aao', 'model': 'test', 'pred': {'step': step}}
+            for n, step in ((5, 2), (50, 0))]
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, 'results.jsonl')
+        with open(path, 'w', encoding='utf-8') as f:
+            for row in rows:
+                f.write(json.dumps(row) + '\n')
+        res, _, _ = evaluate.eval_attr(traces, [path])
+    m = res[('aao', 'test')][('AEB', 'ALL')]['step']
+    assert m['n'] == 2 and m['hit'] == 1 and m['adjusted_n'] == 2
+    assert abs(m['adjusted_sum'] / 2 - (1 - 1 / 49) / 2) < 1e-12
+    g = dict(TRACE, gold={'step': 2, 'agent': 'Orchestrator'}, steps=[
+        {'agent': 'Orchestrator (thought)'}, {'agent': 'Orchestrator (-> worker)'}, {'agent': 'worker'}])
+    assert evaluate.trace_scores(g, {'pred': {'step': 2, 'agent': 'orchestrator (thought)'}})['agent'] == (True, 1)
+    assert evaluate.trace_scores(g, {'pred': {'agent': 'worker'}})['agent'] == (False, -1)
+    failed = evaluate.trace_scores(g, {'pred': {'step': 2, 'agent': 'Orchestrator'}, 'errors': ['failed']})
+    assert failed['step'][0] is False and failed['agent'] == (False, -1)
+    assert evaluate.trace_scores(g, {'pred': None})['step'][0] is False
+    missing = dict(g, gold={'agent': 'absent'})
+    assert evaluate.trace_scores(missing, {'pred': {'agent': 'absent'}})['agent'] == (True, None)
+    row = ckl_judge.judge_trace(FakeLLM(), TRACE)
+    for item in row['l2'].values():
+        item['status'] = INDET
+    rates, counts = evaluate.coverage_stats([row])
+    assert counts['L1+L2'] == (3, 12) and counts['ALL'] == (9, 18)
+    altered = copy.deepcopy(row)
+    altered['l1']['L1-01']['status'] = INDET
+    assert evaluate.coverage_stats([row] * 9 + [altered])[1]['L1+L2'] == (29, 120)
+    assert evaluate.coverage_stats([row] * 8 + [altered] * 2)[1]['L1+L2'] == (28, 120)
+    assert evaluate.coverage_stats([{}])[1]['ALL'] == (0, 18)
+    assert evaluate.coverage_stats([])[1]['ALL'] == (0, 0)
+    assert evaluate.coverage_stats([row] * 9 + [altered])[1]['ALL'] == (89, 180)
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        evaluate.print_attr(res, detail=True)
+    assert 'adjusted' in buf.getvalue() and '\u00b1' not in buf.getvalue()
+    print('ok 8: chance expectation, per-trace averaging, degenerate cases, errors, agent identity, combined coverage')
 
 
 def test_paths():
@@ -243,6 +296,7 @@ if __name__ == '__main__':
     test_attribute_prompt(row)
     test_llm_class()
     test_render_and_evaluate()
+    test_adjusted_accuracy_and_coverage()
     test_paths()
     test_agentrx()
     print('ALL OFFLINE TESTS PASSED')

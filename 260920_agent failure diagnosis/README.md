@@ -61,7 +61,15 @@ python attribute.py --method ckl --run --model %MODEL% --ckl-file ckl_%TAG%.json
 
 ## 5. 결과 확인
 
-단계 exact/±1/±3/±5, 에이전트·모듈 일치율, AAO–CKL 쌍대 비교를 집계한다.
+**accuracy, 보정 accuracy, coverage**를 출력한다. Tolerance는 사용하지 않는다.
+
+- Step accuracy는 예측 단계와 정답 단계의 정확일치율이다.
+- 보정 accuracy는 trace마다 `(hit - 1/T) / (1 - 1/T)`를 계산한 뒤 평균낸다. T는 정규화된 전체 궤적의 step 수이며 hit는 정답 1·오답 0이다. 로그 절단 여부와 무관하게 전체 T를 사용한다.
+- Agent-level은 T 대신 trace의 후보 에이전트 수 K로 보정한다. 후보는 귀인 입력에 나오는 이름이며 대소문자·앞뒤 공백과 `Orchestrator (thought)` 등의 활동 접미사를 정규화한다. Raw accuracy에도 같은 이름 정규화를 적용한다.
+- 보정값은 우연 수준 0, 완전 일치 1이며 음수를 허용한다. T≤1·K≤1 또는 정답 에이전트가 후보에 없으면 보정 평균에서만 제외하고 `adj_n`을 표시한다. Raw accuracy는 %, 보정 accuracy는 소수로 표시한다.
+- 호출·파싱 실패와 누락된 예측은 오답이다. 결과 행 자체가 없는 trace는 평가되지 않는다. AEB module은 raw accuracy만 표시한다. AAO–CKL 쌍대 비교는 공통 trace에서 raw·보정 accuracy 차이를 계산하며 McNemar 검정은 raw 정확일치에만 적용한다.
+- Coverage는 **임계값 없이 실제 판단 가능한 (trace, 항목) 쌍의 비율**이다. L0는 `true 수 / (trace 수 × 6)`, L1+L2는 `(ERROR + NO_ERROR) 수 / (trace 수 × 12)`, 전체는 `(L0 true + L1·L2 판단 가능) 수 / (trace 수 × 18)`로 계산한다. 누락된 항목과 INDETERMINATE는 분모에 포함하되 분자에서 제외한다. L1·L2 계층별 비율을 단순 평균하지 않고 판단 건수를 합산한다. `--detail` 또는 `--coverage`는 항목별 비율도 보여준다. 임계값 옵션 `--p`는 제거했다.
+- 저장된 결과를 재집계하므로 LLM 재호출은 필요 없다.
 
 ```bat
 python evaluate.py --ckl ckl_%TAG%.jsonl --attr attr_aao_%TAG%.jsonl attr_ckl_%TAG%.jsonl
