@@ -37,9 +37,11 @@ def trace_scores(g, r):
     pred = r.get('pred') or {}
     valid = not r.get('errors')
     scores = {}
-    if g['gold'].get('step') is not None:
-        hit = bool(valid and pred.get('step') == g['gold']['step'])
-        scores['step'] = (hit, corrected(hit, len(g['steps'])))
+    target_step = g['gold'].get('step')
+    target_valid = (isinstance(target_step, int) and not isinstance(target_step, bool)
+                    and 0 <= target_step < len(g['steps']))
+    hit = bool(valid and target_valid and pred.get('step') == target_step)
+    scores['step'] = (hit, corrected(hit, len(g['steps'])))
     if g['gold'].get('agent'):
         candidates = {agent_name(s.get('agent')) for s in g['steps']} - {None}
         target = agent_name(g['gold']['agent'])
@@ -95,7 +97,7 @@ def print_attr(res, detail=False):
                 adj = f"{m['adjusted_sum'] / m['adjusted_n']:.4f}" if m['adjusted_n'] else '-'
                 print(f'{method:8s} {model:32s} {"/".join(bench):20s} {level:7s} {m["n"]:5d} '
                       f'{100 * m["hit"] / m["n"]:8.1f}% {adj:>10s} {m["adjusted_n"]:6d}')
-    print('Missing predictions / call or parse errors count as incorrect. Missing result rows are not evaluated.')
+    print('Missing/invalid gold steps, missing predictions, and call or parse errors count as incorrect. Missing result rows are not evaluated.')
     print('For methods with different sample sizes, use the common-trace comparison below.')
 
 
