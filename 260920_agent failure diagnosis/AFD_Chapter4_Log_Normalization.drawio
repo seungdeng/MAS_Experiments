@@ -1,0 +1,100 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="normalization" name="Execution Log Normalization">
+    <mxGraphModel dx="1178" dy="619" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="510" pageHeight="340" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="panel_a" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="108" width="494" x="8" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="message1" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="28" width="175" x="19" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="message2" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="28" width="175" x="19" y="101" as="geometry" />
+        </mxCell>
+        <mxCell id="step0" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="28" width="222" x="269" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="step1" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="28" width="222" x="269" y="101" as="geometry" />
+        </mxCell>
+        <mxCell id="panel_b" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="132" width="494" x="8" y="148" as="geometry" />
+        </mxCell>
+        <mxCell id="reply" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="28" width="175" x="19" y="184" as="geometry" />
+        </mxCell>
+        <mxCell id="next" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="45" width="175" x="19" y="224" as="geometry" />
+        </mxCell>
+        <mxCell id="combined" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="91" width="222" x="269" y="178" as="geometry" />
+        </mxCell>
+        <mxCell id="step_header" parent="1" style="rounded=0;fillColor=#F5F5F5;strokeColor=#222222;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="22" width="222" x="269" y="178" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_0" edge="1" parent="1" source="message1" style="edgeStyle=segmentEdgeStyle;rounded=0;strokeColor=#222222;strokeWidth=1.4;endArrow=block;endSize=5;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="step0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_1" edge="1" parent="1" source="message2" style="edgeStyle=segmentEdgeStyle;rounded=0;strokeColor=#222222;strokeWidth=1.4;endArrow=block;endSize=5;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="step1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_2" edge="1" parent="1" source="reply" style="edgeStyle=segmentEdgeStyle;rounded=0;strokeColor=#222222;strokeWidth=1.4;endArrow=block;endSize=5;endFill=1;exitX=1;exitY=0.5;entryX=0.01;entryY=0.418;entryDx=0;entryDy=0;entryPerimeter=0;" target="combined">
+          <mxGeometry relative="1" x="-0.2018" as="geometry">
+            <Array as="points">
+              <mxPoint x="194" y="200" />
+              <mxPoint x="230" y="200" />
+              <mxPoint x="230" y="216" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_3" edge="1" parent="1" source="next" style="edgeStyle=segmentEdgeStyle;rounded=0;strokeColor=#2B694B;strokeWidth=1.4;endArrow=block;endSize=5;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.7527472527472527;" target="combined">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="raw_title" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=1;html=1;" value="Original Log" vertex="1">
+          <mxGeometry height="23" width="101" x="19" y="3" as="geometry" />
+        </mxCell>
+        <mxCell id="output_title" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=1;html=1;" value="Normalized Execution Steps" vertex="1">
+          <mxGeometry height="23" width="222" x="269" y="3" as="geometry" />
+        </mxCell>
+        <mxCell id="who" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=1;html=1;" value="Who&amp;amp;When" vertex="1">
+          <mxGeometry height="22" width="260" x="19" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="msg1_label" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=0;html=1;" value="Message 1" vertex="1">
+          <mxGeometry height="28" width="156" x="28" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="msg2_label" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=0;html=1;" value="Message 2" vertex="1">
+          <mxGeometry height="28" width="156" x="28" y="101" as="geometry" />
+        </mxCell>
+        <mxCell id="step0_label" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=0;html=1;" value="Step 0  ·  Message 1" vertex="1">
+          <mxGeometry height="28" width="201" x="279" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="step1_label" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=0;html=1;" value="Step 1  ·  Message 2" vertex="1">
+          <mxGeometry height="28" width="201" x="279" y="101" as="geometry" />
+        </mxCell>
+        <mxCell id="aeb" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=1;html=1;" value="AgentErrorBench" vertex="1">
+          <mxGeometry height="22" width="260" x="19" y="152" as="geometry" />
+        </mxCell>
+        <mxCell id="reply_label" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=0;html=1;" value="Full Agent Response" vertex="1">
+          <mxGeometry height="28" width="156" x="28" y="184" as="geometry" />
+        </mxCell>
+        <mxCell id="next_label" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=0;html=1;" value="Next User Message" vertex="1">
+          <mxGeometry height="19" width="156" x="28" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="obs_label" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#2B694B;fontSize=14;fontStyle=0;html=1;" value="Observation text" vertex="1">
+          <mxGeometry height="19" width="156" x="28" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="combined_label" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=14;fontStyle=1;html=1;" value="Step 0" vertex="1">
+          <mxGeometry height="22" width="201" x="279" y="178" as="geometry" />
+        </mxCell>
+        <mxCell id="agent_output" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#181818;fontSize=15;fontStyle=0;html=1;" value="Agent Output&amp;nbsp;" vertex="1">
+          <mxGeometry height="28" width="201" x="279" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="env_obs" parent="1" style="text;fillColor=none;strokeColor=none;spacing=0;align=left;verticalAlign=middle;fontFamily=Arial;fontColor=#2B694B;fontSize=15;fontStyle=0;html=1;" value="Environment Observation" vertex="1">
+          <mxGeometry height="35" width="201" x="279" y="229" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
