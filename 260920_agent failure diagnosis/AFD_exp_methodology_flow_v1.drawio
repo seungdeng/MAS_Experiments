@@ -1,0 +1,129 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="afd-method" name="Methodology Flow v25">
+    <mxGraphModel dx="2438" dy="1281" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1320" pageHeight="1130" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-31" parent="1" style="rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=0.5;" value="" vertex="1">
+          <mxGeometry height="700" width="336" x="454" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="phase1" parent="1" style="rounded=0;fillColor=#EAF3E9;strokeColor=#000000;strokeWidth=0.5;" value="" vertex="1">
+          <mxGeometry height="138" width="670" x="120" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="phase2" parent="1" style="rounded=0;fillColor=#FBEADD;strokeColor=#000000;strokeWidth=0.5;" value="" vertex="1">
+          <mxGeometry height="700" width="336" x="120" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="logs" parent="1" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.8;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontColor=#202826;whiteSpace=wrap;html=1;" value="Agent Execution Logs" vertex="1">
+          <mxGeometry height="80" width="400" x="256" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="diagnosis" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.8;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontColor=#202826;whiteSpace=wrap;html=1;" value="Evaluation" vertex="1">
+          <mxGeometry height="72" width="560" x="174" y="672" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillStyle=auto;dashed=1;fillColor=none;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="125" width="280" x="154" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="availability" parent="1" style="shape=document;size=0.18;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.8;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontColor=#202826;whiteSpace=wrap;html=1;" value="Predicted Error Step" vertex="1">
+          <mxGeometry height="70" width="240" x="494" y="568" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-2" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.8;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontColor=#202826;whiteSpace=wrap;html=1;" value="Failure Attribution&lt;br&gt;(Execution Logs Only)" vertex="1">
+          <mxGeometry height="72" width="240" x="174" y="249" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-3" edge="1" parent="1" source="logs" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=classic;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endSize=10;edgeStyle=orthogonalEdgeStyle;startArrow=none;startFill=0;exitDx=0;exitDy=0;exitPerimeter=0;entryDx=0;entryDy=0;" target="zeOKcl2Ws-yBPuq-ffnp-5" value="">
+          <mxGeometry relative="1" x="0.0211" as="geometry">
+            <Array as="points">
+              <mxPoint x="456" y="170" />
+              <mxPoint x="294" y="170" />
+            </Array>
+            <mxPoint x="84" y="150" as="sourcePoint" />
+            <mxPoint x="274" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillStyle=auto;dashed=1;fillColor=none;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="315" width="280" x="472" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="l0" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.8;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontColor=#202826;whiteSpace=wrap;html=1;" value="Error Diagnosis" vertex="1">
+          <mxGeometry height="72" width="240" x="494" y="249" as="geometry" />
+        </mxCell>
+        <mxCell id="e_log_l0" edge="1" parent="1" source="logs" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=classic;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endSize=10;edgeStyle=orthogonalEdgeStyle;startArrow=none;startFill=0;exitDx=0;exitDy=0;exitPerimeter=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" x="-0.0043" as="geometry">
+            <Array as="points">
+              <mxPoint x="456" y="170" />
+              <mxPoint x="614" y="170" />
+            </Array>
+            <mxPoint x="434" y="140" as="sourcePoint" />
+            <mxPoint x="614" y="215" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-4" parent="1" style="shape=document;size=0.18;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.8;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontColor=#202826;whiteSpace=wrap;html=1;" value="Diagnostic Results(L1)" vertex="1">
+          <mxGeometry height="70" width="240" x="494" y="348" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-10" parent="1" style="rounded=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.8;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontColor=#202826;whiteSpace=wrap;html=1;" value="Failure Attribution&lt;div&gt;(Execution Logs + L1)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="72" width="240" x="494" y="438" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-12" edge="1" parent="1" source="l0" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;endSize=10;exitDx=0;exitDy=0;" target="zeOKcl2Ws-yBPuq-ffnp-4" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="769" as="sourcePoint" />
+            <mxPoint x="710" y="807" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-15" edge="1" parent="1" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;endSize=10;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="614" y="412" as="sourcePoint" />
+            <mxPoint x="614" y="439" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-17" edge="1" parent="1" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endSize=10;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="613" y="530" as="sourcePoint" />
+            <mxPoint x="613" y="568" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-19" edge="1" parent="1" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endSize=10;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="613" y="633" as="sourcePoint" />
+            <mxPoint x="613" y="671" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-20" parent="1" style="shape=document;size=0.18;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.8;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontColor=#202826;whiteSpace=wrap;html=1;" value="Predicted Error Step" vertex="1">
+          <mxGeometry height="70" width="240" x="174" y="568" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-21" edge="1" parent="1" source="zeOKcl2Ws-yBPuq-ffnp-5" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endSize=10;" target="zeOKcl2Ws-yBPuq-ffnp-20" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="850" as="sourcePoint" />
+            <mxPoint x="470" y="936" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phase3_name" parent="1" style="text;fillColor=none;strokeColor=none;fontColor=#3F648A;fontFamily=Arial;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;html=1;" value="(A) All at Once" vertex="1">
+          <mxGeometry height="30" width="166" x="158" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-22" parent="1" style="text;fillColor=none;strokeColor=none;fontColor=#3F648A;fontFamily=Arial;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;html=1;" value="(B) Proposed Method" vertex="1">
+          <mxGeometry height="30" width="166" x="476" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-23" edge="1" parent="1" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endSize=10;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="294" y="634" as="sourcePoint" />
+            <mxPoint x="294" y="672" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-27" parent="1" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" value="&lt;span style=&quot;color: rgb(32, 40, 38); font-family: Arial; font-size: 22px;&quot;&gt;Step Accuracy&lt;/span&gt;" vertex="1">
+          <mxGeometry height="70" width="237" x="175" y="782" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-28" edge="1" parent="1" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endSize=10;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="294" y="744" as="sourcePoint" />
+            <mxPoint x="294" y="782" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-29" parent="1" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" value="&lt;span style=&quot;color: rgb(32, 40, 38); font-family: Arial; font-size: 22px;&quot;&gt;Step Accuracy&lt;/span&gt;" vertex="1">
+          <mxGeometry height="70" width="237" x="493.5" y="782" as="geometry" />
+        </mxCell>
+        <mxCell id="zeOKcl2Ws-yBPuq-ffnp-30" edge="1" parent="1" style="rounded=0;html=1;strokeColor=#000000;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=13;fontColor=#4C5651;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endSize=10;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="613" y="745" as="sourcePoint" />
+            <mxPoint x="613" y="783" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

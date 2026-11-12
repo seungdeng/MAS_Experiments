@@ -66,12 +66,15 @@ python attribute.py --method ckl --run --model %MODEL% --ckl-file ckl_%TAG%.json
 ```bat
 python evaluate.py --ckl ckl_%TAG%.jsonl --attr attr_aao_%TAG%.jsonl attr_ckl_%TAG%.jsonl
 
-python evaluate.py --ckl ckl_google_gemini-3.7-flash.jsonl --attr attr_aao_google_gemini-3.7-flash.jsonl attr_ckl_google_gemini-3.7-flash.jsonl
+python evaluate.py --ckl ckl_openai_gpt-5-mini.jsonl --attr attr_aao_openai_gpt-5-mini.jsonl attr_ckl_openai_gpt-5-mini.jsonl
 
 python evaluate.py --ckl ckl_%TAG%.jsonl --attr attr_aao_%TAG%.jsonl attr_ckl_%TAG%.jsonl --detail
+
+python evaluate.py --ckl ckl_openai_gpt-5-mini.jsonl --attr attr_aao_openai_gpt-5-mini.jsonl attr_ckl_openai_gpt-5-mini.jsonl --detail
+
 python evaluate.py --ckl ckl_%TAG%.jsonl --coverage
 
-python evaluate.py --ckl ckl_google_gemini-3.7-flash.jsonl --coverage
+python evaluate.py --ckl ckl_openai_gpt-5-mini.jsonl --coverage
 ```
 
 **기존 TRAIL 결과와 섞지 않도록** 위처럼 `v3_fit_` 태그와 파일명을 명시한다. 시험 실행과 전체 실행 파일도 분리된다.
