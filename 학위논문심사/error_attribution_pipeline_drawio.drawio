@@ -1,0 +1,93 @@
+<mxfile host="app.diagrams.net" agent="5.0" scale="1" border="0">
+  <diagram id="llm-error-attribution" name="Page-1">
+    <mxGraphModel dx="1683" dy="885" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="A6JDpBlNkrCsoG8dyOV1-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;" value="" vertex="1">
+          <mxGeometry height="840" width="740" x="40" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="node_log" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#ffffff;strokeColor=#333333;fontSize=20;fontColor=#222222;" value="LLM Multi-Agent System Log" vertex="1">
+          <mxGeometry height="75" width="420" x="300" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="node_llm" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=22;fillColor=#ffffff;strokeColor=#333333;fontSize=20;fontColor=#222222;" value="LLM" vertex="1">
+          <mxGeometry height="65" width="110" x="80" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="node_step1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=20;fontColor=#222222;" value="Traditional Failure Attribution&lt;br&gt;(Var.1 All at Once / Var.2 Step by Step)" vertex="1">
+          <mxGeometry height="65" width="420" x="300" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="badge_1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d9d9d9;strokeColor=#555555;fontSize=15;fontColor=#222222;" value="1" vertex="1">
+          <mxGeometry height="32" width="32" x="284" y="159" as="geometry" />
+        </mxCell>
+        <mxCell id="node_doc1" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;size=0.14;fillColor=#ffffff;strokeColor=#333333;fontSize=20;fontColor=#222222;" value="Potential Error Step &amp;amp; Agent" vertex="1">
+          <mxGeometry height="65" width="420" x="300" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="node_step2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=20;fontColor=#222222;" value="Window Augmentation" vertex="1">
+          <mxGeometry height="65" width="420" x="300" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="badge_2" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d9d9d9;strokeColor=#555555;fontSize=15;fontColor=#222222;" value="2" vertex="1">
+          <mxGeometry height="32" width="32" x="284" y="389" as="geometry" />
+        </mxCell>
+        <mxCell id="node_doc2_bg2" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;size=0.14;fillColor=#ffffff;strokeColor=#333333;" value="" vertex="1">
+          <mxGeometry height="60" width="396" x="324" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="node_doc2_bg1" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;size=0.14;fillColor=#ffffff;strokeColor=#333333;" value="" vertex="1">
+          <mxGeometry height="60" width="396" x="312" y="528" as="geometry" />
+        </mxCell>
+        <mxCell id="node_doc2" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;size=0.14;fillColor=#ffffff;strokeColor=#333333;fontSize=20;fontColor=#222222;" value="Augmented Potential Error Steps &amp;amp; Agents" vertex="1">
+          <mxGeometry height="62" width="396" x="300" y="536" as="geometry" />
+        </mxCell>
+        <mxCell id="node_step3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=20;fontColor=#222222;" value="Window Focused Identification" vertex="1">
+          <mxGeometry height="65" width="420" x="300" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="badge_3" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d9d9d9;strokeColor=#555555;fontSize=15;fontColor=#222222;" value="3" vertex="1">
+          <mxGeometry height="32" width="32" x="284" y="634" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_log_1" edge="1" parent="1" source="node_log" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=block;endFill=1;" target="node_step1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_1_doc1" edge="1" parent="1" source="node_step1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=block;endFill=1;" target="node_doc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_doc1_2" edge="1" parent="1" source="node_doc1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=block;endFill=1;" target="node_step2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_2_doc2" edge="1" parent="1" source="node_step2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=block;endFill=1;" target="node_doc2_bg2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="500" />
+              <mxPoint x="510" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_doc2_3" edge="1" parent="1" source="node_doc2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=block;endFill=1;" target="node_step3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="625" />
+              <mxPoint x="510" y="625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_3_scroll" edge="1" parent="1" source="node_step3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=block;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="510" y="765" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_llm_1" edge="1" parent="1" source="node_llm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="node_step1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_llm_3" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=block;endFill=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="node_step3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="245" y="682.5" />
+            </Array>
+            <mxPoint x="245" y="207.5" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A6JDpBlNkrCsoG8dyOV1-1" parent="1" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" value="&lt;span style=&quot;color: rgb(34, 34, 34);&quot;&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Decisive Error Step &amp;amp; Agent&lt;/font&gt;&lt;/span&gt;" vertex="1">
+          <mxGeometry height="65" width="420" x="300" y="765" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
